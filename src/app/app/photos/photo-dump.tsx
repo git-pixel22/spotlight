@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import exifr from "exifr";
-import { Images, Plus, X } from "@phosphor-icons/react";
+import { Check, Images, Plus, X } from "@phosphor-icons/react";
 
 const MAX_PHOTOS = 20;
 const MAX_EDGE = 1600;
@@ -41,6 +41,11 @@ export function PhotoDump() {
   const [items, setItems] = useState<Item[]>([]);
   const [stage, setStage] = useState<"pick" | "uploading" | "thinking" | "found">("pick");
   const [chosen, setChosen] = useState<Set<string>>(new Set());
+  // Photos the AI skipped, and the ones the user taps to rescue anyway.
+  const [skipped, setSkipped] = useState<string[]>([]);
+  const [rescue, setRescue] = useState<Set<string>>(new Set());
+  const [firstMoment, setFirstMoment] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
   const [uploaded, setUploaded] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
@@ -110,9 +115,44 @@ export function PhotoDump() {
       (json.moments ?? []).flatMap((m: { photos: { url: string }[] }) => m.photos.map((p) => p.url)),
     );
     setChosen(new Set(ordered.filter((i) => picked.has(i.url!)).map((i) => i.id)));
+    const skippedIds = ordered.filter((i) => !picked.has(i.url!)).map((i) => i.id);
+    setSkipped(skippedIds);
+    setFirstMoment(json.moments?.[0]?.id ?? null);
+    setItems(ordered);
     setStage("found");
     await new Promise((r) => setTimeout(r, 1600));
-    router.push(json.moments?.[0] ? `/app/moments?focus=${json.moments[0].id}` : "/app/moments");
+    // Nothing skipped: straight on to answering. Otherwise, let them rescue photos.
+    if (!skippedIds.length) router.push(json.moments?.[0] ? `/app/moments?focus=${json.moments[0].id}` : "/app/moments");
+  }
+
+  function toggleRescue(id: string) {
+    setRescue((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else if (next.size < 5) next.add(id);
+      return next;
+    });
+  }
+
+  async function continueToMoments() {
+    let focus = firstMoment;
+    if (rescue.size) {
+      setAdding(true);
+      setError(null);
+      const res = await fetch("/api/moments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ each: true, photos: items.filter((i) => rescue.has(i.id)).map((i) => ({ url: i.url, takenAt: i.takenAt })) }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(json.error ?? "Couldn't add those photos");
+        setAdding(false);
+        return;
+      }
+      focus = json.moments?.[0]?.id ?? focus;
+    }
+    router.push(focus ? `/app/moments?focus=${focus}` : "/app/moments");
   }
 
   const busy = stage !== "pick";
@@ -155,38 +195,52 @@ export function PhotoDump() {
           >
             {stage === "thinking" && <SpotlightSweep />}
             <AnimatePresence>
-              {items.map((item) => (
-                <motion.div
-                  key={item.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  className={`group relative aspect-square overflow-hidden rounded-xl bg-surface-2 ${
-                    stage === "found" && chosen.has(item.id) ? "z-10 ring-4 ring-accent outline outline-2 outline-ink" : ""
-                  }`}
-                >
-                  <motion.img
-                    src={item.preview}
-                    alt=""
-                    className="h-full w-full object-cover"
-                    animate={{
-                      filter: !onStage ? "brightness(1)" : stage === "found" && chosen.has(item.id) ? "brightness(1.05)" : "brightness(0.32)",
-                      scale: stage === "found" && chosen.has(item.id) ? 1.04 : 1,
-                    }}
-                    transition={{ duration: 0.6 }}
-                  />
-                  {!busy && (
-                    <button
-                      onClick={() => setItems((prev) => prev.filter((p) => p.id !== item.id))}
-                      className="absolute right-1 top-1 hidden h-6 w-6 rounded-full bg-black/60 text-xs text-white group-hover:block"
-                      aria-label="Remove photo"
-                    >
-                      <X size={14} weight="bold" className="mx-auto" />
-                    </button>
-                  )}
-                </motion.div>
-              ))}
+              {items.map((item) => {
+                const lit = stage === "found" && (chosen.has(item.id) || rescue.has(item.id));
+                const rescuable = stage === "found" && skipped.includes(item.id);
+                return (
+                  <motion.div
+                    key={item.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className={`group relative aspect-square overflow-hidden rounded-xl bg-surface-2 ${
+                      stage === "found" && chosen.has(item.id) ? "z-10 ring-4 ring-accent outline outline-2 outline-ink" : ""
+                    } ${rescue.has(item.id) ? "z-10 outline-dashed outline-4 outline-accent" : ""} ${rescuable ? "cursor-pointer" : ""}`}
+                    onClick={rescuable ? () => toggleRescue(item.id) : undefined}
+                    role={rescuable ? "button" : undefined}
+                    aria-pressed={rescuable ? rescue.has(item.id) : undefined}
+                    aria-label={rescuable ? "Use this photo too" : undefined}
+                  >
+                    <motion.img
+                      src={item.preview}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      animate={{
+                        filter: !onStage ? "brightness(1)" : lit ? "brightness(1.05)" : rescuable ? "brightness(0.5)" : "brightness(0.32)",
+                        scale: lit ? 1.04 : 1,
+                      }}
+                      transition={{ duration: 0.6 }}
+                    />
+                    {!busy && (
+                      <button
+                        onClick={() => setItems((prev) => prev.filter((p) => p.id !== item.id))}
+                        className="absolute right-1 top-1 hidden h-6 w-6 rounded-full bg-black/60 text-xs text-white group-hover:block"
+                        aria-label="Remove photo"
+                      >
+                        <X size={14} weight="bold" className="mx-auto" />
+                      </button>
+                    )}
+                    {rescuable && (
+                      <span className="pointer-events-none absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-ink">
+                        {rescue.has(item.id) ? <Check size={11} weight="bold" /> : <Plus size={11} weight="bold" />}
+                        {rescue.has(item.id) ? "Added" : "Use it"}
+                      </span>
+                    )}
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
             {!busy && items.length < MAX_PHOTOS && (
               <button
@@ -205,7 +259,24 @@ export function PhotoDump() {
                 Find my moments
               </button>
             )}
-            {stage !== "pick" && (
+            {stage === "found" && skipped.length > 0 && (
+              <div className="panel p-5">
+                <p className="font-heading text-xl">
+                  Spotlight picked {chosen.size} photo{chosen.size === 1 ? "" : "s"} and skipped {skipped.length}.
+                </p>
+                <p className="mt-1 text-sm text-muted">
+                  It skips repeats and photos with less of a story. Tap a skipped photo to use it anyway (up to 5).
+                </p>
+                <button onClick={continueToMoments} disabled={adding} className="btn-accent mt-4 w-full py-3 text-base">
+                  {adding
+                    ? "Adding your picks…"
+                    : rescue.size
+                      ? `Add ${rescue.size} and answer my moments`
+                      : "Answer my moments"}
+                </button>
+              </div>
+            )}
+            {stage !== "pick" && !(stage === "found" && skipped.length > 0) && (
               <div className="panel flex items-center gap-4 p-5">
                 <motion.span
                   className="block h-3 w-3 shrink-0 rounded-full bg-accent"

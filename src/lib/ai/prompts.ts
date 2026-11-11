@@ -68,13 +68,17 @@ Skip blurry, duplicate, private-looking (documents, screenshots with personal da
 For each moment, ask ONE short, specific question that pulls out the story only the owner knows: who, why, what happened, what it meant. Never ask generic questions like "Tell me more about this".
 You never write the post. You notice and you ask. Respond with JSON only.`;
 
-export function momentsPrompt(profile: Profile | null, photoMeta: { index: number; takenAt?: string }[]) {
+export function momentsPrompt(profile: Profile | null, photoMeta: { index: number; takenAt?: string }[], each = false) {
   return `About the person: ${profile?.summary ?? "unknown, a small business or creator"}
 Things they posted about recently (avoid repeating these): ${profile?.recentTopics.join(", ") || "none"}
 
 There are ${photoMeta.length} photos, in order, indexed from 0.${photoMeta.some((p) => p.takenAt) ? `\nTaken at: ${photoMeta.map((p) => `#${p.index} ${p.takenAt ?? "?"}`).join(", ")}` : ""}
 
-Pick 3 to 5 moments (fewer if the photos don't support more). Group photos of the same moment together.
+${
+    each
+      ? "The person chose these photos themselves. Make exactly one moment per photo, in the same order: moment i uses photoIndexes [i]."
+      : "Pick 3 to 5 moments (fewer if the photos don't support more). Group photos of the same moment together. If there are 3 photos or fewer, give each photo its own moment unless two show the same thing."
+  }
 Return JSON:
 {
   "moments": [

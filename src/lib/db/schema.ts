@@ -81,7 +81,7 @@ export const moments = pgTable("moments", {
 });
 
 export type DraftStatus = "draft" | "sent" | "failed";
-export type SendMode = "draft" | "queue" | "idea";
+export type SendMode = "draft" | "queue" | "scheduled" | "idea";
 
 export const drafts = pgTable("drafts", {
   id: uuid("id").primaryKey().defaultRandom(),

@@ -24,6 +24,6 @@ export async function POST() {
 
     const session = await getSession();
     session.destroy();
-    return NextResponse.redirect(`${process.env.APP_URL}/?error=${encodeURIComponent("Your Spotlight data has been deleted.")}`, { status: 303 });
+    return NextResponse.redirect(`${process.env.APP_URL}/?notice=deleted`, { status: 303 });
   });
 }

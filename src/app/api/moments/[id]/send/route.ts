@@ -11,7 +11,8 @@ import { ruleFor } from "@/lib/channels";
 export const maxDuration = 60;
 
 const bodySchema = z.object({
-  mode: z.enum(["draft", "queue", "idea"]),
+  mode: z.enum(["draft", "queue", "scheduled", "idea"]),
+  dueAt: z.iso.datetime().optional(),
   posts: z.array(z.object({ draftId: z.uuid(), text: z.string().trim().min(1) })).min(1),
 });
 
@@ -22,7 +23,10 @@ export async function POST(request: NextRequest, ctx: RouteContext<"/api/moments
     const { id } = await ctx.params;
     const moment = await getOwnedMoment(user, id);
     if (!moment) return jsonError(404, "Moment not found");
-    const { mode, posts } = bodySchema.parse(await request.json());
+    const { mode, posts, dueAt } = bodySchema.parse(await request.json());
+    if (mode === "scheduled" && (!dueAt || new Date(dueAt).getTime() < Date.now() + 60_000)) {
+      return jsonError(400, "Pick a time at least a minute from now.");
+    }
 
     const rows = await db.query.drafts.findMany({
       where: and(eq(schema.drafts.momentId, moment.id), inArray(schema.drafts.id, posts.map((p) => p.draftId))),
@@ -44,15 +48,17 @@ export async function POST(request: NextRequest, ctx: RouteContext<"/api/moments
       const rule = ruleFor(row.service);
       const text = (textById.get(row.id) ?? row.text).slice(0, rule.limit);
       try {
-        const postId = await createPost(user.id, {
+        const post = await createPost(user.id, {
           channelId: row.channelId,
           service: row.service,
           text,
           images: images.slice(0, rule.maxImages),
           mode,
+          dueAt,
         });
+        const postId = post.id;
         await db.update(schema.drafts).set({ text, status: "sent", sendMode: mode, bufferPostId: postId, error: null }).where(eq(schema.drafts.id, row.id));
-        results.push({ draftId: row.id, channelId: row.channelId, ok: true, postId });
+        results.push({ draftId: row.id, channelId: row.channelId, ok: true, postId, dueAt: post.dueAt });
       } catch (err) {
         const error = (err as Error).message;
         await db.update(schema.drafts).set({ text, status: "failed", sendMode: mode, error }).where(eq(schema.drafts.id, row.id));

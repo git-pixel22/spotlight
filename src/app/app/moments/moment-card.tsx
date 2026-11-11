@@ -20,7 +20,20 @@ export type ChannelView = {
 
 type Photo = { url: string; alt?: string };
 type Draft = { id: string; channelId: string; text: string; status: string; error?: string | null };
-type SendResult = { draftId?: string; channelId?: string; ok: boolean; error?: string; postId?: string; ideaId?: string };
+type SendResult = { draftId?: string; channelId?: string; ok: boolean; error?: string; postId?: string; ideaId?: string; dueAt?: string | null };
+type SendMode = "draft" | "queue" | "scheduled" | "idea";
+
+const whenLabel = (iso: string) =>
+  new Date(iso).toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+
+/** Default for the time picker: tomorrow at 9:00 in the browser's timezone, formatted for datetime-local. */
+function tomorrowAtNine() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  d.setHours(9, 0, 0, 0);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
 
 type Props = {
   moment: {
@@ -52,6 +65,9 @@ export function MomentCard({ moment, drafts: initialDrafts, channels, sampleAnsw
   const [drafts, setDrafts] = useState<Draft[]>(initialDrafts);
   const [texts, setTexts] = useState<Record<string, string>>(Object.fromEntries(initialDrafts.map((d) => [d.id, d.text])));
   const [results, setResults] = useState<SendResult[]>([]);
+  const [sentMode, setSentMode] = useState<SendMode>("draft");
+  const [picking, setPicking] = useState(false);
+  const [when, setWhen] = useState(tomorrowAtNine);
   const [error, setError] = useState<string | null>(null);
   const [hidden, setHidden] = useState(false);
 
@@ -83,14 +99,19 @@ export function MomentCard({ moment, drafts: initialDrafts, channels, sampleAnsw
     }
   }
 
-  async function send(mode: "draft" | "queue" | "idea") {
+  async function send(mode: SendMode) {
     setStage("sending");
+    setSentMode(mode);
     setError(null);
     try {
       const res = await fetch(`/api/moments/${moment.id}/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode, posts: drafts.map((d) => ({ draftId: d.id, text: texts[d.id] ?? d.text })) }),
+        body: JSON.stringify({
+          mode,
+          dueAt: mode === "scheduled" ? new Date(when).toISOString() : undefined,
+          posts: drafts.map((d) => ({ draftId: d.id, text: texts[d.id] ?? d.text })),
+        }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
@@ -249,8 +270,28 @@ export function MomentCard({ moment, drafts: initialDrafts, channels, sampleAnsw
                   {stage === "sending" ? "Sending to Buffer…" : "Save as drafts in Buffer"}
                 </button>
                 <button className="btn-ghost" disabled={stage === "sending"} onClick={() => send("queue")}>Add to queue</button>
+                <button className="btn-ghost" disabled={stage === "sending"} onClick={() => setPicking((p) => !p)} aria-expanded={picking}>
+                  Pick a time
+                </button>
                 <button className="btn-ghost" disabled={stage === "sending"} onClick={() => send("idea")}>Save as an Idea</button>
               </div>
+              <p className="text-xs text-muted">Add to queue uses the next free slot in each channel&apos;s posting schedule in Buffer.</p>
+              {picking && (
+                <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-line p-4">
+                  <label className="flex flex-col gap-1 text-sm">
+                    <span className="text-muted">Post on every channel at</span>
+                    <input
+                      type="datetime-local"
+                      value={when}
+                      onChange={(e) => setWhen(e.target.value)}
+                      className="rounded-xl border border-line bg-paper px-3 py-2 outline-none focus:border-ink"
+                    />
+                  </label>
+                  <button className="btn-accent" disabled={stage === "sending" || !when} onClick={() => send("scheduled")}>
+                    Schedule
+                  </button>
+                </div>
+              )}
               <button className="text-sm text-muted hover:text-ink" onClick={() => setStage("confirm")}>
                 Change my answer
               </button>
@@ -259,13 +300,16 @@ export function MomentCard({ moment, drafts: initialDrafts, channels, sampleAnsw
 
           {stage === "sent" && (
             <motion.div key="sent" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="mt-5 rounded-2xl bg-stage p-5 text-paper">
-              <p className="font-heading text-2xl">It&apos;s in your Buffer.</p>
+              <p className="font-heading text-2xl">
+                {sentMode === "draft" ? "Saved as drafts in Buffer." : sentMode === "idea" ? "Saved as an Idea in Buffer." : "Scheduled in Buffer."}
+              </p>
               <ul className="mt-2 space-y-1 text-sm">
                 {results.map((r, i) => {
                   const c = r.channelId ? channelById.get(r.channelId) : null;
                   return (
                     <li key={i} className={r.ok ? "text-accent" : "text-[#ff9b80]"}>
                       {r.ok ? <Check weight="bold" className="inline" /> : <X weight="bold" className="inline" />} {r.ideaId ? "Saved as an Idea" : c?.label ?? "Post"}
+                      {r.ok && r.dueAt && sentMode !== "draft" ? `, goes out ${whenLabel(r.dueAt)}` : ""}
                       {!r.ok && r.error ? `: ${r.error}` : ""}
                     </li>
                   );

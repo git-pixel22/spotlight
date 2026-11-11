@@ -13,6 +13,8 @@ const bodySchema = z.object({
     .array(z.object({ url: z.url(), takenAt: z.string().optional() }))
     .min(1)
     .max(20),
+  // true when the user hand-picks photos the AI skipped: one moment per photo.
+  each: z.boolean().optional(),
 });
 
 // Only fetch our own Blob store's files (no server-side requests to arbitrary URLs).
@@ -31,7 +33,8 @@ async function toImageInput(url: string): Promise<ImageInput> {
 export async function POST(request: NextRequest) {
   return handle(async () => {
     const user = await requireApiUser();
-    const { photos } = bodySchema.parse(await request.json());
+    const { photos, each } = bodySchema.parse(await request.json());
+    if (each && photos.length > 5) return jsonError(400, "Pick up to 5 photos at a time.");
     if (!photos.every((p) => isOurBlob(p.url))) return jsonError(400, "Unknown photo source");
     if (!(await underDailyCap(user.id, "moments"))) {
       return jsonError(429, "You've used today's free photo checks. Try the sample week, or come back tomorrow.");
@@ -42,7 +45,7 @@ export async function POST(request: NextRequest) {
       task: "moments",
       userId: user.id,
       system: MOMENTS_SYSTEM,
-      prompt: momentsPrompt(user.profile, photos.map((p, index) => ({ index, takenAt: p.takenAt }))),
+      prompt: momentsPrompt(user.profile, photos.map((p, index) => ({ index, takenAt: p.takenAt })), each),
       schema: momentsSchema,
       images,
     });
@@ -59,6 +62,8 @@ export async function POST(request: NextRequest) {
       .filter((m) => m.photos.length);
 
     const inserted = rows.length ? await db.insert(schema.moments).values(rows).returning() : [];
-    return NextResponse.json({ moments: inserted, model });
+    const used = new Set(inserted.flatMap((m) => m.photos.map((p) => p.url)));
+    const skipped = photos.filter((p) => !used.has(p.url)).map((p) => p.url);
+    return NextResponse.json({ moments: inserted, skipped, model });
   });
 }

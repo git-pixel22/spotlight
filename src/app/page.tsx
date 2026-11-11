@@ -14,6 +14,7 @@ const RANGE = ["pottery-wheel", "barber", "florist", "threads", "yoga-class", "p
 export default async function Home({ searchParams }: PageProps<"/">) {
   const [user, params] = await Promise.all([getCurrentUser(), searchParams]);
   const error = typeof params.error === "string" ? params.error : null;
+  const notice = params.notice === "deleted" ? "Done. Everything Spotlight stored about you has been deleted." : null;
   const start = user ? "/app" : "/api/auth/login";
 
   return (
@@ -37,6 +38,11 @@ export default async function Home({ searchParams }: PageProps<"/">) {
               {error && (
                 <p className="notice" role="alert">
                   {error}
+                </p>
+              )}
+              {notice && (
+                <p className="notice notice-ok" role="status">
+                  {notice}
                 </p>
               )}
               <h1 className="wordmark">

@@ -77,7 +77,7 @@ export async function fetchScheduledPosts(userId: string, organizationId: string
   return data.posts.edges.map((e) => e.node);
 }
 
-type MutationResult = { __typename: string; message?: string; post?: { id: string } };
+type MutationResult = { __typename: string; message?: string; post?: { id: string; dueAt: string | null } };
 
 /** Per-network metadata Buffer requires for a plain photo/text post. */
 function metadataFor(service: string) {
@@ -100,7 +100,8 @@ export async function createPost(
     service: string;
     text: string;
     images: { url: string; alt?: string }[];
-    mode: "draft" | "queue";
+    mode: "draft" | "queue" | "scheduled";
+    dueAt?: string; // ISO, required for "scheduled"
   },
 ) {
   const input = {
@@ -109,7 +110,8 @@ export async function createPost(
     assets: args.images.map((img) => ({
       image: { url: img.url, metadata: { altText: img.alt ?? "" } },
     })),
-    mode: "addToQueue",
+    mode: args.mode === "scheduled" ? "customScheduled" : "addToQueue",
+    ...(args.mode === "scheduled" ? { dueAt: args.dueAt } : {}),
     schedulingType: "automatic",
     needsApproval: false,
     saveToDraft: args.mode === "draft",
@@ -121,7 +123,7 @@ export async function createPost(
     `mutation Create($input: CreatePostInput!) {
       createPost(input: $input) {
         __typename
-        ... on PostActionSuccess { post { id } }
+        ... on PostActionSuccess { post { id dueAt } }
         ... on MutationError { message }
       }
     }`,
@@ -131,7 +133,7 @@ export async function createPost(
   if (r.__typename !== "PostActionSuccess" || !r.post) {
     throw new Error(r.message ?? `Buffer returned ${r.__typename}`);
   }
-  return r.post.id;
+  return r.post;
 }
 
 export async function createIdea(
