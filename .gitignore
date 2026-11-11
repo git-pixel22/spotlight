@@ -58,3 +58,5 @@ bakery-photos/
 # Design exploration assets (large, local only)
 docs/concepts-archive/img/
 docs/concepts-archive/shots/
+
+!.env.example
