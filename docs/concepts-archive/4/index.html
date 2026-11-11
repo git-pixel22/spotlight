@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spotlight</title>
+<meta name="description" content="You're already living your content. Spotlight helps you notice it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=Covered+By+Your+Grace&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout concept: a darkroom bench. A contact sheet lies on it under the name; further down
+   the same frames move to a light table, a paper print, a film leader, and a lab price board. */
+:root {
+  color-scheme: light;
+  --darkroom: #181513;   /* bench, near-black with brown in it */
+  --film: #0c0a09;       /* the strip itself */
+  --paper: #f5f5f0;      /* contact-sheet paper, neutral white */
+  --table: #d5dcda;      /* light table glass, cool */
+  --table-deep: #bcc6c3;
+  --amber: #e2832a;      /* film base, edge print */
+  --amber-deep: #b9611a;
+  --grease: #e03a1e;     /* red china marker */
+  --china: #f3c91d;      /* yellow china marker */
+  --ink: #1b1816;
+  --ink-soft: #55504a;
+  --on-dark: #f5f5f0;
+  --on-dark-soft: #b7b0a6;
+  --display: "Archivo", "Arial Black", "Helvetica Neue", Arial, sans-serif;
+  --body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --hand: "Covered By Your Grace", "Bradley Hand", "Segoe Print", cursive;
+  --edge: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --gutter: clamp(16px, 4vw, 56px);
+  --max: 1280px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--darkroom); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.5; font-stretch: 100%;
+  overflow-x: hidden;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+h1, h2, h3, p, ul, ol, figure { margin: 0; padding: 0; }
+ul, ol { list-style: none; }
+:focus-visible { outline: 3px solid var(--china); outline-offset: 3px; }
+.on-light :focus-visible { outline-color: var(--grease); }
+.wrap { max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter); }
+.hand { font-family: var(--hand); color: var(--grease); line-height: 1; font-weight: 400; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+h2 {
+  font-family: var(--display); font-stretch: 118%; font-weight: 800;
+  font-size: clamp(34px, 4.6vw, 64px); line-height: 1; letter-spacing: -0.03em; text-wrap: balance;
+}
+.lede { font-size: clamp(17px, 1.5vw, 20px); max-width: 56ch; }
+
+/* buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  font: 700 16px/1 var(--body); font-stretch: 105%; text-decoration: none;
+  padding: 15px 22px; border: 2px solid transparent; border-radius: 3px; cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--china); color: var(--ink); box-shadow: 3px 3px 0 var(--grease); }
+.btn-primary:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--grease); }
+.btn-primary:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--grease); }
+.btn-ghost { border-color: currentColor; color: var(--on-dark); }
+.btn-ghost:hover { background: var(--on-dark); color: var(--ink); border-color: var(--on-dark); }
+.on-light .btn-ghost { color: var(--ink); }
+.on-light .btn-ghost:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.btn-ink { background: var(--ink); color: var(--paper); }
+.btn-ink:hover { background: #000; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 rgba(0,0,0,.25); }
+.btn-sm { padding: 11px 16px; font-size: 15px; }
+
+/* nav + logo */
+.nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 18px; }
+.logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--on-dark); }
+.logo svg { width: 46px; height: 34px; overflow: visible; flex: none; }
+.logo b { font-family: var(--display); font-stretch: 122%; font-weight: 800; font-size: 21px; letter-spacing: -0.02em; }
+
+/* ---------- hero ---------- */
+.hero { background: var(--darkroom); color: var(--on-dark); padding-bottom: clamp(56px, 8vw, 110px); position: relative; }
+.hero h1 {
+  font-family: var(--display); font-stretch: 125%; font-weight: 800;
+  font-size: clamp(58px, 16.4vw, 222px); line-height: .84; letter-spacing: -0.045em;
+  margin: clamp(8px, 1.5vw, 20px) 0 0 -0.04em; color: var(--paper);
+}
+.hero-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px 48px; flex-wrap: wrap; margin-top: clamp(18px, 2.2vw, 30px); }
+.hero-row p { font-size: clamp(20px, 2.1vw, 29px); line-height: 1.2; font-weight: 500; max-width: 24ch; letter-spacing: -0.01em; }
+.hero-row p + p { font-size: 16px; font-weight: 400; color: var(--on-dark-soft); max-width: 44ch; margin-top: 12px; letter-spacing: 0; line-height: 1.45; }
+.cta { display: flex; flex-wrap: wrap; gap: 14px; }
+
+/* contact sheet */
+.sheet-wrap { margin-top: clamp(30px, 4vw, 54px); }
+.sheet {
+  background: var(--paper); color: var(--ink); position: relative; overflow: hidden;
+  padding: clamp(14px, 2vw, 26px) 0 clamp(64px, 6.4vw, 88px);
+  transform: rotate(-.7deg);
+  box-shadow: 0 1px 0 #fff inset, 0 30px 60px -20px rgba(0,0,0,.7), 0 2px 0 rgba(0,0,0,.4);
+  --fw: calc((min(100vw, var(--max)) - 2 * var(--gutter) - 2 * var(--sp) - 5 * var(--gap)) / 6);
+  --sp: clamp(14px, 2vw, 26px); --gap: 5px; --band: 24px;
+}
+.sheet-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-inline: var(--sp); margin-bottom: 14px; }
+.sheet-head .hand { color: var(--ink); font-size: clamp(22px, 2vw, 28px); }
+.sheet-head .hand + .hand { color: var(--grease); text-align: right; }
+.strip {
+  display: flex; gap: var(--gap); width: max-content; position: relative;
+  margin-left: calc(var(--sp) + var(--shift, 0px)); padding: var(--band) 4px;
+  background-color: var(--film);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='19' height='24'%3E%3Crect x='5' y='4' width='10' height='7' rx='1.6' fill='%23f5f5f0'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='19' height='24'%3E%3Crect x='5' y='13' width='10' height='7' rx='1.6' fill='%23f5f5f0'/%3E%3C/svg%3E");
+  background-repeat: repeat-x; background-position: 0 0, 0 100%;
+}
+.strip + .strip { margin-top: clamp(54px, 5.4vw, 74px); }
+.frame { position: relative; width: var(--fw); flex: none; }
+.frame img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; filter: saturate(.92) contrast(1.03); }
+.frame i, .frame u {
+  position: absolute; left: 2px; font: 500 9px/1 var(--edge); font-style: normal; text-decoration: none;
+  color: var(--amber); letter-spacing: .06em; white-space: nowrap; background: var(--film); padding: 1px 3px;
+}
+.frame i { bottom: calc(-1 * var(--band) + 3px); }
+.frame u { top: calc(-1 * var(--band) + 3px); left: 30%; }
+
+.mark { position: absolute; inset: -17% -13%; width: 126%; height: 134%; overflow: visible; pointer-events: none; z-index: 2; }
+.mark path { fill: none; stroke: var(--grease); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; filter: url(#grease); }
+.mark.yellow path { stroke: var(--china); stroke-width: 8; }
+.note { position: absolute; z-index: 3; font-family: var(--hand); color: var(--grease); font-size: clamp(23px, 2.5vw, 35px); line-height: .95; white-space: nowrap; top: calc(100% + var(--band) + 10px); left: 4%; transform: rotate(-3deg); transform-origin: left top; }
+.note.up { top: auto; bottom: calc(100% + var(--band) + 8px); transform: rotate(2deg); }
+.note.r { left: 30%; }
+
+/* the one motion moment: the editor's marks draw themselves */
+@media (prefers-reduced-motion: no-preference) {
+  .sheet .mark path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .85s cubic-bezier(.5,.1,.3,1) forwards; animation-delay: var(--d); }
+  .sheet .note { opacity: 0; animation: jot .35s ease-out forwards; animation-delay: calc(var(--d) + .7s); }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes jot { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(-20% -10% -20% 0); } }
+}
+
+/* ---------- how it works (light table) ---------- */
+.how { overflow-x: clip; background: var(--table); padding-block: clamp(64px, 8vw, 120px);
+  background-image: linear-gradient(rgba(255,255,255,.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.35) 1px, transparent 1px);
+  background-size: 48px 48px; }
+.how-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px; margin-bottom: clamp(36px, 5vw, 64px); }
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: auto auto; gap: 22px clamp(28px, 3.4vw, 52px); }
+.step { display: grid; grid-row: span 2; grid-template-rows: subgrid; gap: 22px; position: relative; min-width: 0; }
+.step-text { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; row-gap: 6px; align-items: start; }
+.step-n { font-family: var(--display); font-stretch: 125%; font-weight: 800; font-size: 56px; line-height: .8; letter-spacing: -0.04em; grid-row: span 2; }
+.step h3 { font-size: 21px; line-height: 1.15; font-weight: 700; font-stretch: 108%; letter-spacing: -0.01em; }
+.step p { font-size: 16px; color: var(--ink-soft); line-height: 1.45; }
+.vis { align-self: start; position: relative; min-width: 0; }
+
+/* step 1: a cut strip with the keeper circled */
+.cut { --fw: 31%; --band: 22px; --gap: 4px; display: flex; gap: var(--gap); padding: var(--band) 4px; background-color: var(--film);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='19' height='22'%3E%3Crect x='5' y='3' width='10' height='7' rx='1.6' fill='%23d5dcda'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='19' height='22'%3E%3Crect x='5' y='12' width='10' height='7' rx='1.6' fill='%23d5dcda'/%3E%3C/svg%3E");
+  background-repeat: repeat-x; background-position: 0 0, 0 100%; transform: rotate(-1.5deg); margin-top: 26px;
+  box-shadow: 0 14px 22px -14px rgba(20,30,28,.55); }
+.cut .frame { flex: 1 1 0; width: auto; }
+.cut.under { transform: rotate(2.2deg) translateX(5%); margin-top: 6px; }
+.cut.under img { filter: saturate(.75) brightness(.8); }
+.cut.under + .cut { margin-top: -14px; position: relative; }
+.arrow { position: absolute; width: clamp(40px, 4.4vw, 66px); height: auto; left: calc(100% - 4px); top: 34%; overflow: visible; z-index: 4; pointer-events: none; }
+.arrow path { fill: none; stroke: var(--grease); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; filter: url(#grease); }
+.step p.cut-note { font-family: var(--hand); color: var(--grease); font-size: 32px; line-height: 1; margin: 30px 0 0 30%; transform: rotate(-3deg); }
+.step p.dump { display: flex; align-items: center; gap: 10px; margin-top: 18px; font-size: 14px; color: var(--ink-soft); }
+.dump span { display: inline-block; width: 30px; height: 30px; background-size: cover; background-position: center; border: 2px solid var(--paper); margin-left: -12px; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+.dump span:first-child { margin-left: 0; }
+
+/* step 2: the frame with the question in the margin */
+.ask { background: var(--paper); padding: 12px 12px 18px; transform: rotate(1deg); box-shadow: 0 16px 26px -16px rgba(20,30,28,.6); }
+.ask img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+.ask .q { font-family: var(--hand); color: var(--grease); font-size: clamp(27px, 2.5vw, 34px); line-height: .95; margin: 14px 4px 14px; transform: rotate(-1.5deg); }
+.voice { display: flex; align-items: center; gap: 12px; border-top: 1.5px dashed #c9c8c0; padding-top: 14px; }
+.rec { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--ink); display: grid; place-items: center; }
+.rec svg { width: 16px; height: 22px; }
+.wave { flex: 1; height: 30px; min-width: 0; }
+.voice b { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* step 3: the print */
+.print { background: #fff; padding: 12px 12px 14px; transform: rotate(-.8deg); box-shadow: 0 16px 26px -16px rgba(20,30,28,.6), 0 0 0 1px rgba(0,0,0,.06); }
+.print img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+.print blockquote { margin: 14px 2px 12px; font-size: 16.5px; line-height: 1.42; color: var(--ink); }
+.fits { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; font-size: 13.5px; border-top: 1.5px solid var(--ink); padding-top: 10px; }
+.fits li { display: flex; justify-content: space-between; gap: 8px; font-variant-numeric: tabular-nums; }
+.fits li span:last-child { color: var(--ink-soft); }
+.saved { margin-top: 12px; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; }
+.saved svg { width: 22px; height: 18px; overflow: visible; }
+
+/* the rest of the table */
+.also { display: grid; grid-template-columns: 1.25fr 1fr; gap: clamp(24px, 3.4vw, 52px); margin-top: clamp(48px, 6vw, 84px); padding-top: clamp(32px, 4vw, 48px); border-top: 2px solid var(--ink); align-items: start; }
+.also h3 { font-size: 21px; font-weight: 700; font-stretch: 108%; letter-spacing: -0.01em; margin-bottom: 6px; }
+.also p { font-size: 16px; color: var(--ink-soft); max-width: 46ch; }
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; background: var(--film); padding: 20px 5px 6px; margin-top: 18px; position: relative; }
+.week li { aspect-ratio: 1; background: #26221f center / cover; position: relative; }
+.week li.empty { background: repeating-linear-gradient(135deg, #1d1a18 0 6px, #24201d 6px 12px); }
+.week li em { position: absolute; top: -15px; left: 1px; font: 500 9px/1 var(--edge); color: var(--amber); letter-spacing: .06em; font-style: normal; }
+.also p.week-note { font-family: var(--hand); color: var(--grease); font-size: clamp(26px, 2.6vw, 34px); line-height: 1; margin: 14px 0 0 0; padding-left: 44%; transform: rotate(-2deg); max-width: none; }
+.slip { background: var(--china); padding: 20px 22px 22px; transform: rotate(1.2deg); box-shadow: 0 16px 26px -18px rgba(20,30,28,.6); margin-top: 18px; }
+.slip small { display: block; font-size: 13.5px; font-weight: 700; margin-bottom: 8px; }
+.slip strong { display: block; font-family: var(--display); font-stretch: 112%; font-weight: 800; font-size: clamp(22px, 2.1vw, 28px); line-height: 1.08; letter-spacing: -0.02em; text-wrap: balance; }
+.also .btn { margin-top: 24px; }
+
+/* ---------- never writes for you (paper) ---------- */
+.never { background: var(--paper); padding-block: clamp(64px, 8vw, 120px); }
+.never-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.3fr); gap: clamp(32px, 5vw, 80px); align-items: start; }
+.never .lede { margin-top: 22px; }
+.verbs { margin-top: 30px; display: grid; gap: 0; border-top: 2px solid var(--ink); }
+.verbs li { display: grid; grid-template-columns: 6.2em 1fr; gap: 12px; padding: 13px 0; border-bottom: 1px solid #cfcec6; font-size: 16px; align-items: baseline; }
+.verbs b { font-family: var(--display); font-stretch: 118%; font-weight: 800; font-size: 20px; letter-spacing: -0.02em; }
+.verbs li.no b { color: var(--grease); }
+.pair { display: grid; gap: 26px; position: relative; }
+.said, .sent { position: relative; }
+.pair h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+.pair h3 svg { width: 18px; height: 18px; flex: none; }
+.said p { font-size: clamp(21px, 2.2vw, 30px); line-height: 1.5; font-weight: 500; letter-spacing: -0.01em; color: var(--ink-soft); }
+.said s { text-decoration: none; position: relative; white-space: nowrap; color: #8a857d; }
+.said s::after { content: ""; position: absolute; left: -4px; right: -4px; top: 46%; height: .2em; background: var(--grease); border-radius: 40% 60% 50% 40% / 80% 60% 90% 70%; transform: rotate(-2.5deg); opacity: .9; mix-blend-mode: multiply; }
+.said s:nth-of-type(2n)::after { transform: rotate(1.8deg); top: 52%; }
+.said .hand { position: absolute; right: 0; bottom: -30px; font-size: 28px; transform: rotate(-3deg); }
+.sent { background: #fff; padding: clamp(20px, 2.6vw, 34px); box-shadow: 0 0 0 1px rgba(0,0,0,.07), 0 20px 30px -22px rgba(0,0,0,.45); margin-top: 22px; }
+.sent p { font-size: clamp(21px, 2.2vw, 30px); line-height: 1.34; font-weight: 600; letter-spacing: -0.015em; color: var(--ink); }
+.sent footer { margin-top: 18px; font-size: 14px; color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 6px 22px; justify-content: space-between; }
+
+/* ---------- demo (film leader) ---------- */
+.demo { background: var(--darkroom); color: var(--on-dark); padding-block: clamp(64px, 8vw, 110px); }
+.demo-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 40px; margin-bottom: 30px; }
+.demo-head p { color: var(--on-dark-soft); max-width: 40ch; }
+.leader { position: relative; aspect-ratio: 16 / 9; width: 100%; background: #26211d; overflow: hidden; display: grid; place-items: center; border: 1px solid #3a332d; }
+.leader svg.rings { position: absolute; inset: 0; width: 100%; height: 100%; }
+.leader-in { position: relative; text-align: center; display: grid; justify-items: center; gap: clamp(6px, 1vw, 14px); padding: 16px; }
+.leader-in strong { font-family: var(--display); font-stretch: 125%; font-weight: 800; font-size: clamp(64px, 15vw, 210px); line-height: .8; letter-spacing: -0.04em; color: var(--paper); }
+.leader-in span { font-size: clamp(15px, 1.7vw, 22px); font-weight: 600; background: #26211d; padding: 2px 10px; }
+.leader-in em { font-style: normal; font-size: 14px; color: var(--on-dark-soft); background: #26211d; padding: 0 8px; }
+
+/* ---------- the $0 stack (lab price board on film-base amber) ---------- */
+.stack { background: var(--amber); padding-block: clamp(64px, 8vw, 120px); color: var(--ink); }
+.stack-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 56px; align-items: end; margin-bottom: clamp(32px, 4vw, 52px); }
+.stack h2 { font-size: clamp(44px, 7.4vw, 108px); line-height: .88; }
+.tiers { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: auto auto auto 1fr; gap: 0 14px; }
+.tier { background: var(--darkroom); color: var(--on-dark); padding: 24px 22px 26px; display: grid; grid-row: span 4; grid-template-rows: subgrid; gap: 0; position: relative; }
+.tier::before { content: ""; position: absolute; top: 12px; right: 14px; width: 14px; height: 14px; border-radius: 50%; background: var(--amber); }
+.tier h3 { font-size: 15px; font-weight: 600; color: var(--on-dark-soft); padding-right: 24px; }
+.tier h3 b { display: block; color: var(--on-dark); font-family: var(--display); font-stretch: 118%; font-weight: 800; font-size: 23px; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 3px; }
+.price { align-self: end; font-family: var(--display); font-stretch: 125%; font-weight: 800; font-size: clamp(64px, 6.4vw, 92px); line-height: .9; letter-spacing: -0.05em; margin-top: 26px; color: var(--china); }
+.price small { font-size: 18px; font-stretch: 100%; font-weight: 500; letter-spacing: 0; color: var(--on-dark-soft); margin-left: 6px; }
+.allow { margin-top: 12px; padding-bottom: 16px; border-bottom: 2px dashed #4a423a; font-size: 15px; font-weight: 600; color: var(--on-dark); }
+.tier ul { margin-top: 16px; display: grid; gap: 9px; align-content: start; font-size: 15px; line-height: 1.35; color: #d8d2c8; }
+.tier li { padding-left: 20px; position: relative; }
+.tier li::before { content: ""; position: absolute; left: 0; top: .42em; width: 11px; height: 6px; border-left: 2.5px solid var(--amber); border-bottom: 2.5px solid var(--amber); transform: rotate(-48deg); }
+.chain { margin-top: 14px; background: var(--paper); padding: clamp(20px, 2.6vw, 32px); display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.6fr); gap: 20px 48px; align-items: center; }
+.chain h3 { font-family: var(--display); font-stretch: 114%; font-weight: 800; font-size: clamp(21px, 2vw, 26px); line-height: 1.1; letter-spacing: -0.02em; }
+.chain p { font-size: 15.5px; color: var(--ink-soft); margin-top: 8px; }
+.chain ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; counter-reset: m; }
+.chain ol li { counter-increment: m; border-left: 2px solid var(--ink); padding: 2px 10px 4px 12px; font-size: 14.5px; font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+.chain ol li::before { content: counter(m); display: block; font-family: var(--display); font-stretch: 125%; font-weight: 800; font-size: 28px; line-height: 1; margin-bottom: 6px; }
+.chain ol li span { display: block; font-weight: 400; color: var(--ink-soft); font-size: 13.5px; margin-top: 2px; }
+.stack-cta { margin-top: clamp(36px, 5vw, 60px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 40px; }
+.stack-cta p { font-family: var(--display); font-stretch: 118%; font-weight: 800; font-size: clamp(26px, 3.4vw, 46px); line-height: 1; letter-spacing: -0.03em; max-width: 18ch; }
+
+/* ---------- footer ---------- */
+.foot { background: var(--darkroom); color: var(--on-dark-soft); padding-block: 34px 40px; font-size: 15px; }
+.foot .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; }
+.foot p { flex: 1 1 280px; }
+.foot a:not(.logo) { color: var(--on-dark); text-underline-offset: 3px; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 980px) {
+  .arrow { display: none; }
+  .step { grid-row: auto; grid-template-rows: auto auto; }
+  .cut.under { transform: rotate(2.2deg); }
+  .steps { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; gap: 56px; max-width: 520px; }
+  .also, .never-grid, .stack-head, .chain { grid-template-columns: 1fr; }
+  .tiers { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; row-gap: 14px; }
+}
+@media (max-width: 700px) {
+  body { font-size: 16px; }
+  .sheet { --fw: 31vw; --band: 20px; transform: rotate(-.5deg); margin-inline: calc(-1 * var(--gutter) + 6px); }
+  .strip.s1 { --shift: -4vw; }
+  .strip.s2 { --shift: -112vw; }
+  .strip.s3 { --shift: -40vw; }
+  .sheet-head { flex-direction: column; gap: 2px; }
+  .sheet-head .hand + .hand { text-align: left; }
+  .note { font-size: 25px; }
+  .hero-row .cta, .hero-row .cta .btn { width: 100%; }
+  .tiers { grid-template-columns: minmax(0, 1fr); }
+  .chain ol { grid-template-columns: 1fr 1fr; row-gap: 18px; }
+  .said .hand { position: static; display: block; margin-top: 10px; }
+  .logo b { font-size: 19px; }
+  .logo svg { width: 40px; height: 30px; }
+  .also p.week-note { padding-left: 30%; }
+}
+@media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
+</style>
+</head>
+<body>
+
+<!-- shared grease-pencil texture -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="grease" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="wob"/>
+      <feDisplacementMap in="SourceGraphic" in2="wob" scale="5" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="9" result="grain"/>
+      <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -3.4 0 0 0 2.55" result="wax"/>
+      <feComposite in="d" in2="wax" operator="in"/>
+    </filter>
+  </defs>
+</svg>
+
+<header class="hero">
+  <div class="wrap">
+    <nav class="nav" aria-label="Main">
+      <a class="logo" href="./" aria-label="Spotlight home">
+        <svg viewBox="0 0 46 34" aria-hidden="true">
+          <rect x="11" y="9" width="24" height="16" fill="#f5f5f0"/>
+          <rect x="14.5" y="12.5" width="17" height="9" fill="#181513"/>
+          <path d="M9 9 C16 1.5 35 1 41 10 C46.5 19 39 31 23 31.5 C9 32 1.5 24 4.5 15 C7 8 17 3.5 28 4.5" fill="none" stroke="#e03a1e" stroke-width="3.2" stroke-linecap="round"/>
+        </svg>
+        <b>Spotlight</b>
+      </a>
+      <a class="btn btn-primary btn-sm" href="/api/auth/login">Connect Buffer</a>
+    </nav>
+
+    <h1>Spotlight</h1>
+
+    <div class="hero-row">
+      <div>
+        <p>You're already living your content. Spotlight helps you notice it.</p>
+        <p>Drop the week's photos. It circles the three to five worth sharing, asks you one question about each, and puts your answer in Buffer, in your own words.</p>
+      </div>
+      <div class="cta">
+        <a class="btn btn-primary" href="/api/auth/login">Connect Buffer to start</a>
+        <a class="btn btn-ghost" href="#demo">Watch the demo</a>
+      </div>
+    </div>
+
+    <div class="sheet-wrap">
+      <div class="sheet" role="img" aria-label="A contact sheet of one week of photos from small businesses: a potter, a barber, a florist, a tailor, a baker, a plant shop and more. Three frames are circled in grease pencil with the notes: ask, who's this regular? This is the post. Keep!">
+        <div class="sheet-head" aria-hidden="true">
+          <span class="hand">one week, 18 frames</span>
+          <span class="hand">3 keepers</span>
+        </div>
+
+        <div class="strip s1" aria-hidden="true">
+          <div class="frame"><u>SPOTLIGHT 400</u><img src="../img/pottery-wheel.jpg" alt=""><i>1</i></div>
+          <div class="frame"><img src="../img/barber.jpg" alt="" style="object-position:50% 30%"><i>2</i>
+            <svg class="mark" viewBox="0 0 300 220" preserveAspectRatio="none" style="--d:.35s"><path pathLength="1" d="M70 34 C128 6 238 12 272 62 C304 112 270 188 164 202 C72 212 12 172 20 108 C26 54 96 16 186 24"/></svg>
+            <span class="note" style="--d:.35s">ask: who's this regular?</span>
+          </div>
+          <div class="frame"><u>SPOTLIGHT 400</u><img src="../img/owner-potter.jpg" alt=""><i>3</i></div>
+          <div class="frame"><img src="../img/owner-craft.jpg" alt="" style="object-position:50% 30%"><i>4</i></div>
+          <div class="frame"><u>SPOTLIGHT 400</u><img src="../img/yoga-class.jpg" alt=""><i>5</i></div>
+          <div class="frame"><img src="../img/flowers-vase.jpg" alt="" style="object-position:50% 35%"><i>6</i></div>
+        </div>
+
+        <div class="strip s2" aria-hidden="true">
+          <div class="frame"><img src="../img/sewing.jpg" alt=""><i>7</i></div>
+          <div class="frame"><u>SPOTLIGHT 400</u><img src="../img/tattoo.jpg" alt=""><i>8</i></div>
+          <div class="frame"><img src="../img/plants.jpg" alt=""><i>9</i></div>
+          <div class="frame"><u>SPOTLIGHT 400</u><img src="../img/bike-workshop.jpg" alt=""><i>10</i></div>
+          <div class="frame"><img src="../img/bakery-cookie-box.jpg" alt="" style="object-position:50% 55%"><i>11</i>
+            <svg class="mark yellow" viewBox="0 0 300 220" preserveAspectRatio="none" style="--d:1.05s"><path pathLength="1" d="M52 46 C96 10 214 4 262 44 C306 84 290 170 200 198 C116 222 26 190 18 122 C12 62 80 20 170 18 C232 18 280 52 284 104"/></svg>
+            <span class="note" style="--d:1.05s">this is the post</span>
+          </div>
+          <div class="frame"><u>SPOTLIGHT 400</u><img src="../img/candles.jpg" alt=""><i>12</i></div>
+        </div>
+
+        <div class="strip s3" aria-hidden="true">
+          <div class="frame"><u>SPOTLIGHT 400</u><img src="../img/market.jpg" alt=""><i>13</i></div>
+          <div class="frame"><img src="../img/owner-cafe.jpg" alt=""><i>14</i></div>
+          <div class="frame"><u>SPOTLIGHT 400</u><img src="../img/florist.jpg" alt="" style="object-position:50% 30%"><i>15</i>
+            <svg class="mark" viewBox="0 0 300 220" preserveAspectRatio="none" style="--d:1.75s"><path pathLength="1" d="M88 26 C150 4 250 22 276 78 C298 132 250 196 150 200 C66 204 14 160 24 100 C32 52 92 22 160 28"/></svg>
+            <span class="note r" style="--d:1.75s">keep!</span>
+          </div>
+          <div class="frame"><img src="../img/books.jpg" alt=""><i>16</i></div>
+          <div class="frame"><u>SPOTLIGHT 400</u><img src="../img/trainer.jpg" alt=""><i>17</i></div>
+          <div class="frame"><img src="../img/threads.jpg" alt=""><i>18</i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="how on-light" id="how">
+  <div class="wrap">
+    <div class="how-head">
+      <h2>How it works</h2>
+      <p class="lede">Follow one photo from a home baker's week. A box of cookies, shot on a Tuesday, never posted.</p>
+    </div>
+
+    <ol class="steps">
+      <li class="step">
+        <div class="step-text">
+          <span class="step-n" aria-hidden="true">1</span>
+          <h3>Drop the week's photos</h3>
+          <p>The ones already on your phone, messy ones included. Spotlight looks through all of them and circles the cookie box.</p>
+        </div>
+        <div class="vis">
+          <div class="cut under" aria-hidden="true">
+            <div class="frame"><img src="../img/bakery-donuts.jpg" alt="" loading="lazy"><i>7</i></div>
+            <div class="frame"><img src="../img/bakery-display-case.jpg" alt="" loading="lazy"><i>8</i></div>
+            <div class="frame"><img src="../img/bakery-brownies.jpg" alt="" loading="lazy"><i>9</i></div>
+          </div>
+          <div class="cut">
+            <div class="frame"><img src="../img/bakery-muffins.jpg" alt="Muffins on a tray" loading="lazy"><i>10</i></div>
+            <div class="frame"><img src="../img/bakery-cookie-box.jpg" alt="A box of assorted cookies, circled in red grease pencil" loading="lazy" style="object-position:50% 55%"><i>11</i>
+              <svg class="mark" viewBox="0 0 300 220" preserveAspectRatio="none" aria-hidden="true"><path d="M70 34 C128 6 238 12 272 62 C304 112 270 188 164 202 C72 212 12 172 20 108 C26 54 96 16 186 24"/></svg>
+            </div>
+            <div class="frame"><img src="../img/bakery-croissants.jpg" alt="Croissants cooling" loading="lazy"><i>12</i></div>
+          </div>
+          <svg class="arrow" viewBox="0 0 66 40" aria-hidden="true"><path d="M4 26 C20 10 40 10 58 20 M44 8 L59 20 L42 31"/></svg>
+          <p class="cut-note" aria-hidden="true">this one</p>
+          <p class="dump">
+            <span style="background-image:url(../img/bakery-donuts.jpg)"></span><span style="background-image:url(../img/bakery-brownies.jpg)"></span><span style="background-image:url(../img/bakery-display-case.jpg)"></span><span style="background-image:url(../img/bakery-muffins.jpg)"></span>
+            23 photos in, 4 moments noticed
+          </p>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step-text">
+          <span class="step-n" aria-hidden="true">2</span>
+          <h3>Answer one question out loud</h3>
+          <p>Not "write a caption". One specific question about that photo. You talk for ten seconds, the way you'd tell a customer.</p>
+        </div>
+        <div class="vis">
+          <div class="ask">
+            <img src="../img/bakery-cookie-box.jpg" alt="The same box of cookies, enlarged" loading="lazy" style="object-position:50% 55%">
+            <p class="q">Which flavour disappears first?</p>
+            <div class="voice">
+              <span class="rec" aria-hidden="true"><svg viewBox="0 0 16 22"><rect x="4.5" y="1" width="7" height="12" rx="3.5" fill="#f3c91d"/><path d="M1.5 10 a6.5 6.5 0 0 0 13 0 M8 16.5 V21" fill="none" stroke="#f3c91d" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+              <svg class="wave" viewBox="0 0 200 30" preserveAspectRatio="none" aria-hidden="true"><path d="M2 15v0M8 11v8M14 6v18M20 9v12M26 13v4M32 4v22M38 8v14M44 12v6M50 14v2M56 7v16M62 3v24M68 10v10M74 13v4M80 6v18M86 9v12M92 14v2M98 14v2M104 8v14M110 5v20M116 11v8M122 7v16M128 12v6M134 4v22M140 9v12M146 13v4M152 10v10M158 6v18M164 12v6M170 14v2M176 9v12M182 12v6M188 14v2M194 15v0" stroke="#1b1816" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg>
+              <b>0:10, your voice</b>
+            </div>
+          </div>
+          <svg class="arrow" viewBox="0 0 66 40" aria-hidden="true"><path d="M4 26 C20 10 40 10 58 20 M44 8 L59 20 L42 31"/></svg>
+        </div>
+      </li>
+
+      <li class="step">
+        <div class="step-text">
+          <span class="step-n" aria-hidden="true">3</span>
+          <h3>Your own words land in Buffer</h3>
+          <p>One post per channel, fitted to each network's limit. Save it as a draft, queue it, or keep it as a Buffer Idea.</p>
+        </div>
+        <div class="vis">
+          <div class="print">
+            <img src="../img/bakery-cookie-box.jpg" alt="The same box of cookies, now on the finished post" loading="lazy" style="object-position:50% 55%">
+            <blockquote>Matcha Oreo, every single time. I almost didn't make it because I thought matcha was too niche, and now people message me just to ask if it's in the box.</blockquote>
+            <ul class="fits" aria-label="Fits each channel">
+              <li><span>Instagram</span><span>153 of 2,200</span></li>
+              <li><span>X</span><span>153 of 280</span></li>
+              <li><span>Threads</span><span>153 of 500</span></li>
+              <li><span>Bluesky</span><span>153 of 300</span></li>
+            </ul>
+            <p class="saved">
+              <svg viewBox="0 0 22 18" aria-hidden="true"><path d="M2 10 C5 12 6 14 8 16 C11 10 15 5 20 2" fill="none" stroke="#e03a1e" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Saved to Buffer as a draft
+            </p>
+          </div>
+        </div>
+      </li>
+    </ol>
+
+    <div class="also">
+      <div>
+        <h3>It also watches the week ahead</h3>
+        <p>A seven-day strip per channel shows where your queue runs out, so you know which moment to post next.</p>
+        <ul class="week" aria-label="Instagram queue for the next seven days: posts on Monday, Tuesday and Wednesday, nothing from Thursday to Sunday">
+          <li style="background-image:url(../img/bakery-croissants.jpg)"><em>MON</em></li>
+          <li style="background-image:url(../img/bakery-cookie-box.jpg)"><em>TUE</em></li>
+          <li style="background-image:url(../img/bakery-brownies.jpg)"><em>WED</em></li>
+          <li class="empty"><em>THU</em></li>
+          <li class="empty"><em>FRI</em></li>
+          <li class="empty"><em>SAT</em></li>
+          <li class="empty"><em>SUN</em></li>
+        </ul>
+        <p class="week-note" aria-hidden="true">Instagram goes quiet from Thursday</p>
+      </div>
+      <div>
+        <h3>And it asks about the calendar</h3>
+        <p>A question, never a template. Skipping it is a fine answer.</p>
+        <div class="slip">
+          <small>Black Friday in 15 days</small>
+          <strong>Are you doing anything, or deliberately skipping it?</strong>
+        </div>
+        <a class="btn btn-ink" href="/api/auth/login">Try a sample week</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="never on-light" id="your-words">
+  <div class="wrap never-grid">
+    <div>
+      <h2>Spotlight never writes for you.</h2>
+      <p class="lede">An editor with a grease pencil picks the frame. They don't repaint it. Spotlight works the same way with what you say.</p>
+      <ul class="verbs">
+        <li><b>Notices</b><span>the moments in your photos worth sharing.</span></li>
+        <li><b>Asks</b><span>one specific question about each.</span></li>
+        <li><b>Tidies</b><span>the ums, and trims to fit each network.</span></li>
+        <li class="no"><b>Never</b><span>invents facts, prices or claims. Never puts on a marketing voice.</span></li>
+      </ul>
+    </div>
+
+    <div class="pair">
+      <div class="said">
+        <h3><svg viewBox="0 0 18 18" aria-hidden="true"><rect x="6" y="1" width="6" height="10" rx="3" fill="#1b1816"/><path d="M3 8.5a6 6 0 0 0 12 0M9 14.5V17" fill="none" stroke="#1b1816" stroke-width="1.8" stroke-linecap="round"/></svg>What you said</h3>
+        <p>"<s>Um so</s> matcha Oreo, every single time. I almost didn't make it <s>like</s> because I thought matcha was too niche, <s>you know,</s> and now people message me just to ask if it's in the box."</p>
+        <span class="hand" aria-hidden="true">only the filler goes</span>
+      </div>
+      <div class="sent">
+        <h3><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2 3h14v12H2z" fill="none" stroke="#1b1816" stroke-width="1.8"/><path d="M5 7h8M5 10.5h5" stroke="#1b1816" stroke-width="1.8" stroke-linecap="round"/></svg>What went to Buffer</h3>
+        <p>Matcha Oreo, every single time. I almost didn't make it because I thought matcha was too niche, and now people message me just to ask if it's in the box.</p>
+        <footer><span>Every word here is one you said.</span><span>5 filler words removed, 0 added</span></footer>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="demo" id="demo">
+  <div class="wrap">
+    <div class="demo-head">
+      <h2>See a week go through</h2>
+      <p>Photos in, three questions, posts in Buffer. Start to finish in two minutes.</p>
+    </div>
+    <div class="leader" role="img" aria-label="Video placeholder. The 2-minute demo goes here.">
+      <svg class="rings" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <g fill="none" stroke="#4a4139" stroke-width="3">
+          <path d="M800 0V900M0 450H1600"/>
+          <circle cx="800" cy="450" r="330"/><circle cx="800" cy="450" r="290"/>
+        </g>
+        <path d="M800 450 L800 120 A330 330 0 0 1 1130 450 Z" fill="#332c27"/>
+        <g fill="#e2832a"><rect x="24" y="24" width="60" height="6"/><rect x="24" y="24" width="6" height="60"/><rect x="1516" y="24" width="60" height="6"/><rect x="1570" y="24" width="6" height="60"/><rect x="24" y="870" width="60" height="6"/><rect x="24" y="816" width="6" height="60"/><rect x="1516" y="870" width="60" height="6"/><rect x="1570" y="816" width="6" height="60"/></g>
+      </svg>
+      <div class="leader-in">
+        <strong>2:00</strong>
+        <span>The 2-minute demo goes here</span>
+        <em>16:9 video slot</em>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stack on-light" id="stack">
+  <div class="wrap">
+    <div class="stack-head">
+      <h2>The $0 stack</h2>
+      <p class="lede">Spotlight runs entirely on free tiers, on purpose. A one-person business shouldn't need a budget line to post its own week, and neither should the tool that helps.</p>
+    </div>
+
+    <ul class="tiers">
+      <li class="tier">
+        <h3><b>Gemini</b>Google AI Studio free tier</h3>
+        <p class="price">$0<small>/mo</small></p>
+        <p class="allow">~10 requests/min per model</p>
+        <ul>
+          <li>Looks through the week's photos</li>
+          <li>Picks the moments and writes the question</li>
+          <li>Fits your words to each network's limit</li>
+        </ul>
+      </li>
+      <li class="tier">
+        <h3><b>Groq</b>Free tier</h3>
+        <p class="price">$0<small>/mo</small></p>
+        <p class="allow">~20 transcriptions/min</p>
+        <ul>
+          <li>Whisper turns your spoken answer into text</li>
+          <li>Backup model when Gemini is busy</li>
+        </ul>
+      </li>
+      <li class="tier">
+        <h3><b>Vercel and Neon</b>Hobby plan, free Postgres, Blob</h3>
+        <p class="price">$0<small>/mo</small></p>
+        <p class="allow">0.5 GB database, 1 GB photos</p>
+        <ul>
+          <li>Hosts the app</li>
+          <li>Stores your moments and answers</li>
+          <li>Keeps the photos you drop in</li>
+        </ul>
+      </li>
+      <li class="tier">
+        <h3><b>Buffer API</b>Free on every Buffer plan</h3>
+        <p class="price">$0<small>/mo</small></p>
+        <p class="allow">Works with a free Buffer account</p>
+        <ul>
+          <li>Drafts, queue and Ideas</li>
+          <li>Instagram, LinkedIn, X, Threads, Bluesky, Facebook</li>
+        </ul>
+      </li>
+    </ul>
+
+    <div class="chain">
+      <div>
+        <h3>If one free model is busy, the next takes over.</h3>
+        <p>And with zero AI quota left, the sample week still runs the whole flow, real Buffer drafts included.</p>
+      </div>
+      <ol aria-label="Fallback order for reading photos">
+        <li>Gemini Flash<span>first choice</span></li>
+        <li>Gemini Flash-Lite<span>if busy</span></li>
+        <li>Gemma<span>if still busy</span></li>
+        <li>Qwen on Groq<span>last resort</span></li>
+      </ol>
+    </div>
+
+    <div class="stack-cta">
+      <p>Your week is already on your phone.</p>
+      <div class="cta">
+        <a class="btn btn-ink" href="/api/auth/login">Connect Buffer to start</a>
+        <a class="btn btn-ghost" href="/api/auth/login">Try a sample week</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <a class="logo" href="./" aria-label="Spotlight home">
+      <svg viewBox="0 0 46 34" aria-hidden="true">
+        <rect x="11" y="9" width="24" height="16" fill="#f5f5f0"/>
+        <rect x="14.5" y="12.5" width="17" height="9" fill="#181513"/>
+        <path d="M9 9 C16 1.5 35 1 41 10 C46.5 19 39 31 23 31.5 C9 32 1.5 24 4.5 15 C7 8 17 3.5 28 4.5" fill="none" stroke="#e03a1e" stroke-width="3.2" stroke-linecap="round"/>
+      </svg>
+      <b>Spotlight</b>
+    </a>
+    <p>Made by Rajat for Buffer Commit 2026. Not affiliated with Buffer.</p>
+    <a href="/privacy">Privacy</a>
+  </div>
+</footer>
+
+</body>
+</html>

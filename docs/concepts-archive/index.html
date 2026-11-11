@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spotlight concepts</title>
+  <style>
+    :root { --bg: #f2f2f0; --ink: #1b1b1b; --muted: #666; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 16px/1.5 system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+    header { padding: 32px 24px 8px; max-width: 1200px; margin: 0 auto; }
+    h1 { margin: 0; font-size: 28px; }
+    p { color: var(--muted); margin: 4px 0 0; }
+    main { max-width: 1200px; margin: 0 auto; padding: 24px; display: grid; gap: 28px; }
+    article { background: #fff; border-radius: 16px; overflow: hidden; display: grid; grid-template-columns: 1fr 260px; }
+    article .shot { aspect-ratio: 16 / 10; background: #ddd center top / cover no-repeat; display: block; }
+    article .mobile { background: #ddd center top / cover no-repeat; display: block; border-left: 1px solid #eee; }
+    article footer { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; }
+    a.open { background: var(--ink); color: #fff; padding: 8px 16px; border-radius: 999px; text-decoration: none; font-weight: 600; }
+    @media (max-width: 700px) { article { grid-template-columns: 1fr; } article .mobile { display: none; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Spotlight: 5 landing page concepts</h1>
+    <p>Click a concept to open it live (animations included). Screenshots refresh as each one finishes.</p>
+  </header>
+  <main id="list"></main>
+  <script>
+    const concepts = [
+      [1, "The Stage", "A dark theatre where a beam sweeps across a week of small-business photos and lights up the moments worth posting."],
+      [2, "Front Page", "A bold magazine cover: a giant tilted Spotlight wordmark with owners' photos and their own words layered over it."],
+      [3, "Show, don't tell", "Product-first: a phone in the hero plays the real loop, from camera roll to question to voice to posts in Buffer."],
+      [4, "Contact Sheet", "A photo editor's contact sheet, with grease-pencil circles marking the week's keepers and notes in the margin."],
+      [5, "Luxe", "Premium and calm: espresso, wine and linen, with portraits of owners as the stars and their quotes as posts."],
+    ];
+    const t = Date.now();
+    document.getElementById("list").innerHTML = concepts.map(([n, name, desc]) => `
+      <article>
+        <a class="shot" href="./${n}/index.html" style="background-image:url(./shots/${n}-desktop.png?${t})" aria-label="Open concept ${n}"></a>
+        <a class="mobile" href="./${n}/index.html" style="background-image:url(./shots/${n}-mobile.png?${t})" aria-hidden="true" tabindex="-1"></a>
+        <footer><div><strong>${n}. ${name}</strong><p>${desc}</p></div><a class="open" href="./${n}/index.html">Open</a></footer>
+      </article>`).join("");
+  </script>
+</body>
+</html>

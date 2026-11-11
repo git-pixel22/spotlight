@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+/* Spotlight design system (concept 3, "Show, don't tell"): cool mist paper,
+   deep ink, and one sun yellow for the light. Yellow is a fill, never text. */
+:root {
+  --stage: #14211f;
+  --ink: #14211f;
+  --raised: #1c2c29;
+  --paper: #eff3ee;
+  --surface: #ffffff;
+  --surface-2: #e4eae5;
+  --muted: #4b5b57;
+  --taupe: #8a9893;
+  --line: #d5dcd6;
+  --accent: #ffcb1f;
+  --accent-ink: #14211f;
+  --accent-soft: #fff4c2;
+  --accent-text: #7a5b00;
+  --glow: #ffe98f;
+  --success: #1f7a4d;
+  --danger: #b4321a;
+}
+
+@theme inline {
+  --color-stage: var(--stage);
+  --color-ink: var(--ink);
+  --color-raised: var(--raised);
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-muted: var(--muted);
+  --color-taupe: var(--taupe);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-text: var(--accent-text);
+  --color-glow: var(--glow);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-schibsted);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+::selection {
+  background: var(--glow);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+@utility font-heading {
+  font-family: var(--font-schibsted);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+}
+@utility btn-accent {
+  @apply btn bg-accent font-semibold text-accent-ink hover:bg-[#f5bd00];
+}
+@utility btn-primary {
+  @apply btn bg-ink font-semibold text-white hover:bg-raised;
+}
+@utility btn-ghost {
+  @apply btn border border-line bg-transparent text-ink hover:border-taupe hover:bg-surface;
+}
+@utility panel {
+  @apply rounded-[20px] bg-surface;
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
