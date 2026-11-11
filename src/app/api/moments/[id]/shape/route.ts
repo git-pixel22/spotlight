@@ -9,6 +9,7 @@ import { generateJson, underDailyCap } from "@/lib/ai/router";
 import { SHAPE_SYSTEM, shapePrompt, shapeSchema } from "@/lib/ai/prompts";
 import { ruleFor } from "@/lib/channels";
 import { samplePostsFor } from "@/lib/sample";
+import { keepOwnWords } from "@/lib/ai/own-words";
 
 export const maxDuration = 60;
 
@@ -59,11 +60,12 @@ export async function POST(request: NextRequest, ctx: RouteContext<"/api/moments
       cleanedTake = result.data.cleanedTake;
       altTexts = result.data.altTexts;
       const byId = new Map(result.data.posts.map((p) => [p.channelId, p.text]));
-      // Keep only known channels and hard-enforce each network's limit.
-      posts = channels.map((c) => ({
-        channelId: c.id,
-        text: (byId.get(c.id) ?? cleanedTake).slice(0, ruleFor(c.service).limit),
-      }));
+      const allowHashtags = !/^\s*(none|no)\b/i.test(user.profile?.voice.hashtags ?? "none");
+      // Keep only known channels, drop any sentence they didn't say, and hard-enforce each limit.
+      posts = channels.map((c) => {
+        const own = keepOwnWords(byId.get(c.id) ?? cleanedTake, take, { allowHashtags });
+        return { channelId: c.id, text: (own || cleanedTake).slice(0, ruleFor(c.service).limit) };
+      });
     }
 
     const photos = moment.photos.map((p, i) => ({ ...p, alt: altTexts[i] ?? p.alt ?? "" }));
