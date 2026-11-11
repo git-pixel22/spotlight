@@ -1,6 +1,7 @@
 import { firstName, requireUser } from "@/lib/session";
 import { isSupported, ruleFor } from "@/lib/channels";
 import { WelcomeFlow } from "./welcome-flow";
+import { DeleteData } from "./delete-data";
 
 export default async function Welcome() {
   const user = await requireUser();
@@ -13,11 +14,14 @@ export default async function Welcome() {
     supported: isSupported(c.service),
   }));
   return (
-    <WelcomeFlow
-      firstName={firstName(user)}
-      existingProfile={user.profile}
-      channels={channels}
-      selectedIds={user.selectedChannelIds}
-    />
+    <>
+      <WelcomeFlow
+        firstName={firstName(user)}
+        existingProfile={user.profile}
+        channels={channels}
+        selectedIds={user.selectedChannelIds}
+      />
+      {user.profile && <DeleteData />}
+    </>
   );
 }

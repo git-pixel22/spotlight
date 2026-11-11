@@ -106,7 +106,10 @@ export default async function Home({ searchParams }: PageProps<"/">) {
             Spotlight
           </a>
           <p>Made by Rajat for Buffer Commit 2026. Not affiliated with Buffer.</p>
-          <Link href="/privacy">Privacy</Link>
+          <nav className="foot-links" aria-label="Footer">
+            <a href="https://github.com/git-pixel22/spotlight">Source on GitHub</a>
+            <Link href="/privacy">Privacy</Link>
+          </nav>
         </div>
       </footer>
     </div>

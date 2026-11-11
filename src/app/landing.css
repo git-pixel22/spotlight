@@ -277,6 +277,7 @@
   footer .wrap{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:center;justify-content:space-between;border-top:1.5px solid #2C3F3B;padding-top:28px}
   footer .logo{color:#fff;font-size:19px}
   footer .logo svg{width:24px;height:24px}
+  footer .foot-links{display:flex;gap:22px}
   footer p{flex:1;min-width:260px}
   footer a:not(.logo){color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:4px}
 
