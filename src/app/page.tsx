@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { DemoVideo } from "@/components/landing/demo-video";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { IconPlay, Mark } from "@/components/landing/icons";
 import { NeverWrites } from "@/components/landing/never-writes";
@@ -87,18 +88,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
 
         <section className="demo" id="demo">
           <div className="wrap">
-            <div className="video" role="img" aria-label="Placeholder. The 2-minute demo video goes here.">
-              <i className="corner tl" />
-              <i className="corner br" />
-              <span className="len">2:00</span>
-              <div>
-                <span className="play">
-                  <IconPlay size={30} fill="#14211F" />
-                </span>
-                <strong>The 2-minute demo goes here</strong>
-                <span>One real week, from camera roll to Buffer drafts.</span>
-              </div>
-            </div>
+            <DemoVideo />
           </div>
         </section>
 

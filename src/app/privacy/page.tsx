@@ -21,6 +21,10 @@ const SECTIONS = [
     body: "Photos, voice notes and text are processed by Google Gemini and Groq on their free tiers, which may use inputs to improve their services. Only add photos you'd be happy to post.",
   },
   {
+    title: "The demo video",
+    body: "The demo video on the home page is hosted on YouTube and uses its privacy-enhanced mode. Nothing loads from YouTube until you press play.",
+  },
+  {
     title: "Deleting your data",
     body: "In Spotlight, open \"Edit what Spotlight knows about you\" and press \"Delete my data\". That removes your profile, photos, moments, drafts and Buffer tokens from Spotlight. Posts you already sent stay in Buffer.",
   },

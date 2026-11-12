@@ -1,0 +1,8 @@
+# Deploys upload only the app. Env vars come from the Vercel project settings.
+video/
+video-launch/
+video-assets/
+bakery-photos/
+docs/
+certificates/
+.env*

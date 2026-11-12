@@ -2,7 +2,7 @@
 
 **Live:** https://spotlight.meetrajat.com
 **Code:** https://github.com/git-pixel22/spotlight
-**Demo video (1:22):** (link)
+**Demo video (1:22):** https://youtu.be/ifvzMvvgoEc
 
 ## What it is
 
