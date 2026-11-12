@@ -21,6 +21,7 @@ export type Profile = {
   };
   recentTopics: string[];
   basedOnPosts: number;
+  basic?: boolean; // built without AI because every free model was busy
 };
 
 export type ChannelInfo = {

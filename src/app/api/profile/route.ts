@@ -5,7 +5,8 @@ import { db, schema } from "@/lib/db";
 import { handle, jsonError } from "@/lib/api";
 import { requireApiUser } from "@/lib/session";
 import { fetchSentPosts } from "@/lib/buffer/api";
-import { generateJson, underDailyCap } from "@/lib/ai/router";
+import { AllModelsFailedError, generateJson, underDailyCap } from "@/lib/ai/router";
+import type { Profile } from "@/lib/db/schema";
 import { PROFILE_SYSTEM, profilePrompt, profileSchema } from "@/lib/ai/prompts";
 
 export const maxDuration = 60;
@@ -25,17 +26,50 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ needsDescription: true });
     }
 
-    const { data, model } = await generateJson({
-      task: "profile",
-      userId: user.id,
-      system: PROFILE_SYSTEM,
-      prompt: profilePrompt(posts, body.selfDescription),
-      schema: profileSchema,
-    });
-    const profile = { ...data, basedOnPosts: posts.length };
+    let profile: Profile;
+    let model = "basic";
+    try {
+      const result = await generateJson({
+        task: "profile",
+        userId: user.id,
+        system: PROFILE_SYSTEM,
+        prompt: profilePrompt(posts, body.selfDescription),
+        schema: profileSchema,
+      });
+      profile = { ...result.data, basedOnPosts: posts.length };
+      model = result.model;
+    } catch (err) {
+      // Never strand someone at onboarding because the free AI is busy: let them in with a
+      // basic profile they can edit, and the rest of the app (or the sample week) still works.
+      if (!(err instanceof AllModelsFailedError)) throw err;
+      profile = basicProfile(posts, body.selfDescription);
+    }
     await db.update(schema.users).set({ profile, updatedAt: new Date() }).where(eq(schema.users.id, user.id));
     return NextResponse.json({ profile, model });
   });
+}
+
+/** A profile from simple counts over their posts, for when no AI model is available. */
+function basicProfile(posts: { text: string }[], selfDescription?: string): Profile {
+  const n = posts.length;
+  const share = (re: RegExp) => (n ? posts.filter((p) => re.test(p.text)).length / n : 0);
+  const avg = n ? posts.reduce((sum, p) => sum + p.text.length, 0) / n : 0;
+  const about = selfDescription?.trim();
+  return {
+    summary: about ? `You told us: ${about}` : "You post about your work on social media.",
+    business: about ? about.slice(0, 60) : "small business or creator",
+    topics: [],
+    voice: {
+      tone: "plain and friendly",
+      length: avg > 400 ? "long" : avg > 140 ? "medium" : "short",
+      emoji: share(/\p{Extended_Pictographic}/u) > 0.3 ? "a few" : share(/\p{Extended_Pictographic}/u) > 0 ? "rarely" : "none",
+      hashtags: share(/(^|\s)#\w/) > 0.3 ? "a few at the end" : "none",
+      language: "the language they answer in",
+    },
+    recentTopics: [],
+    basedOnPosts: n,
+    basic: true,
+  };
 }
 
 const patchSchema = z.object({

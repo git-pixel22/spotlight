@@ -21,9 +21,15 @@ export function WelcomeFlow(props: {
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(!props.existingProfile);
   const [error, setError] = useState<string | null>(null);
-  const [selected, setSelected] = useState<Set<string>>(new Set(props.selectedIds));
+  // Toggles the user made here, on top of the server's selection, so a refresh that brings
+  // in newly connected channels (already selected server-side) shows them ticked.
+  const [toggled, setToggled] = useState<Record<string, boolean>>({});
   const [saving, setSaving] = useState(false);
+  const [checking, setChecking] = useState(false);
   const started = useRef(false);
+  const supported = props.channels.filter((c) => c.supported);
+  const isSelected = (id: string) => toggled[id] ?? props.selectedIds.includes(id);
+  const selected = supported.filter((c) => isSelected(c.id)).map((c) => c.id);
 
   async function build(selfDescription?: string) {
     setLoading(true);
@@ -62,7 +68,7 @@ export function WelcomeFlow(props: {
     const res = await fetch("/api/profile", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ summary, selectedChannelIds: [...selected] }),
+      body: JSON.stringify({ summary, selectedChannelIds: selected }),
     });
     if (res.ok) router.push("/app");
     else {
@@ -76,7 +82,11 @@ export function WelcomeFlow(props: {
       <h1 className="font-heading text-4xl">
         {props.firstName ? `Hi ${props.firstName}.` : "Hi."} Let&apos;s get to know you.
       </h1>
-      <p className="mt-2 text-muted">Spotlight read your recent Buffer posts so you don&apos;t have to fill in a form.</p>
+      <p className="mt-2 text-muted">
+        {needsDescription || (profile && !profile.basedOnPosts)
+          ? "No posts to read yet, so Spotlight goes by what you tell it."
+          : "Spotlight reads your recent Buffer posts, so there's no form to fill in."}
+      </p>
 
       <div className="mt-8">
         {loading && (
@@ -113,7 +123,7 @@ export function WelcomeFlow(props: {
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
               className="mt-2 w-full resize-none rounded-xl border border-transparent bg-transparent p-0 text-lg outline-none focus:border-line"
-              rows={3}
+              rows={Math.min(8, Math.max(3, Math.ceil(summary.length / 50)))}
             />
             <div className="mt-4 flex flex-wrap gap-2">
               {profile.topics.map((t) => (
@@ -127,7 +137,9 @@ export function WelcomeFlow(props: {
               <div><dt className="text-muted">Hashtags</dt><dd>{profile.voice.hashtags}</dd></div>
             </dl>
             <p className="mt-4 text-xs text-muted">
-              {profile.basedOnPosts ? `Based on your last ${profile.basedOnPosts} posts.` : "Based on your description."} Edit the summary if we got anything wrong.
+              {profile.basic
+                ? "Spotlight's free AI is busy right now, so this is a basic profile. Edit the summary to say what you do."
+                : `${profile.basedOnPosts ? `Based on your last ${profile.basedOnPosts} posts.` : "Based on your description."} Edit the summary if we got anything wrong.`}
             </p>
           </motion.div>
         )}
@@ -153,23 +165,50 @@ export function WelcomeFlow(props: {
                   type="checkbox"
                   className="h-4 w-4 accent-[#14211f]"
                   disabled={!c.supported}
-                  checked={selected.has(c.id)}
-                  onChange={(e) => {
-                    const next = new Set(selected);
-                    if (e.target.checked) next.add(c.id);
-                    else next.delete(c.id);
-                    setSelected(next);
-                  }}
+                  checked={c.supported && isSelected(c.id)}
+                  onChange={(e) => setToggled((t) => ({ ...t, [c.id]: e.target.checked }))}
                 />
                 <ChannelAvatar avatar={c.avatar} label={c.label} />
                 <span className="flex-1">{c.name}</span>
-                <span className="text-sm text-muted">{c.supported ? c.label : `${c.label} (video only, not yet)`}</span>
+                <span className="text-sm text-muted">{c.supported ? c.label : `${c.label} (not supported yet)`}</span>
               </label>
             ))}
           </div>
-          <button className="btn-accent mt-6 w-full py-3" disabled={saving || selected.size === 0} onClick={finish}>
-            {saving ? "Saving…" : "Looks right, let's go"}
-          </button>
+
+          {supported.length === 0 ? (
+            <div className="panel mt-3 p-5">
+              <p className="font-medium">
+                {props.channels.length ? "None of your Buffer channels can take a Spotlight post yet." : "Your Buffer account has no channels yet."}
+              </p>
+              <p className="mt-1 text-sm text-muted">
+                Connect one in Buffer first. Spotlight writes for LinkedIn, X, Instagram, Threads, Bluesky, Mastodon, Facebook and
+                Google Business.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <a href="https://publish.buffer.com" target="_blank" rel="noreferrer" className="btn-primary">
+                  Connect a channel in Buffer
+                </a>
+                <button
+                  className="btn-ghost"
+                  disabled={checking}
+                  onClick={() => {
+                    setChecking(true);
+                    router.refresh();
+                    setTimeout(() => setChecking(false), 2500);
+                  }}
+                >
+                  {checking ? "Checking…" : "I've connected one"}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <button className="btn-accent mt-6 w-full py-3" disabled={saving || selected.length === 0} onClick={finish}>
+                {saving ? "Saving…" : "Looks right, let's go"}
+              </button>
+              {selected.length === 0 && <p className="mt-2 text-center text-sm text-muted">Pick at least one channel.</p>}
+            </>
+          )}
         </div>
       )}
     </div>
