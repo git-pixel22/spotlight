@@ -1,0 +1,40 @@
+{
+  "name": "spotlight-launch-video",
+  "version": "1.0.0",
+  "description": "Spotlight launch cut: no voiceover, music-driven, cursor-follow camera (Remotion)",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.543",
+    "@remotion/google-fonts": "4.0.543",
+    "@remotion/media": "4.0.543",
+    "@remotion/studio": "4.0.543",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "remotion": "4.0.543"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config-flat": "4.0.543",
+    "@types/react": "19.3.0",
+    "@types/web": "0.0.166",
+    "eslint": "10.12.0",
+    "prettier": "3.8.1",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "dev": "remotion studio",
+    "lint": "tsc",
+    "assets": "node scripts/build-audio.mjs && node scripts/build-stills.mjs",
+    "render:raw": "node scripts/render.mjs",
+    "master": "node scripts/master.mjs",
+    "render": "npm run render:raw && npm run master",
+    "check": "node scripts/check-beats.mjs",
+    "render:single": "remotion render SpotlightLaunch out/spotlight-launch-raw.mp4 --codec=h264 --crf=16 --audio-codec=aac --concurrency=2 --media-cache-size-in-bytes=500000000 --timeout=120000"
+  },
+  "allowScripts": {
+    "esbuild": false
+  }
+}

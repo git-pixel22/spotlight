@@ -1,0 +1,11 @@
+{
+  "track": "what-about-action.mp3",
+  "period": 0.495869,
+  "t0": 0.0028,
+  "lead": 0.133333,
+  "startBeat": 16,
+  "spliceVideoBeat": 144,
+  "resumeTrackBeat": 208,
+  "endVideoBeat": 160,
+  "tail": 1.95
+}
