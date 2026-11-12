@@ -12,22 +12,22 @@ type CalendarEvent = {
 
 const EVENTS: CalendarEvent[] = [
   { date: "2026-11-26", name: "Thanksgiving", regions: ["US"], question: "Who or what are you most thankful for in your business this year?" },
-  { date: "2026-11-27", name: "Black Friday", regions: ["global"], question: "Are you doing anything for Black Friday, or deliberately skipping it? Why?" },
+  { date: "2026-11-27", name: "Black Friday", regions: ["global"], question: "What's your plan for Black Friday this year, even if it's sitting it out?" },
   { date: "2026-11-28", name: "Small Business Saturday", regions: ["US"], question: "What's one thing only a small business like yours can offer?" },
-  { date: "2026-11-30", name: "Cyber Monday", regions: ["global"], question: "Anything new you can point people to this Cyber Monday?" },
-  { date: "2026-12-01", name: "Giving Tuesday", regions: ["global"], question: "Is there a cause or a neighbour you'd like to shout out this Giving Tuesday?" },
+  { date: "2026-11-30", name: "Cyber Monday", regions: ["global"], question: "What's new that you'd point people to this Cyber Monday?" },
+  { date: "2026-12-01", name: "Giving Tuesday", regions: ["global"], question: "Which cause or neighbour would you shout out this Giving Tuesday, and why?" },
   { date: "2026-12-05", name: "Small Business Saturday UK", regions: ["UK"], question: "What's one thing only a small business like yours can offer?" },
   { date: "2026-12-21", name: "The shortest day", regions: ["US", "UK", "CA"], question: "What gets you through the darkest week of the year?" },
   { date: "2026-12-24", name: "Christmas Eve", regions: ["global"], question: "What does Christmas Eve look like for you and your work?" },
-  { date: "2026-12-25", name: "Christmas", regions: ["global"], question: "Any festive orders, traditions or moments from this week worth sharing?" },
-  { date: "2026-12-26", name: "Boxing Day", regions: ["UK", "CA", "AU"], question: "Are you open on Boxing Day, or finally taking a breather?" },
+  { date: "2026-12-25", name: "Christmas", regions: ["global"], question: "What festive order, tradition or moment from this week is worth sharing?" },
+  { date: "2026-12-26", name: "Boxing Day", regions: ["UK", "CA", "AU"], question: "What does Boxing Day look like for you this year?" },
   { date: "2026-12-29", name: "Your year in review", regions: ["global"], question: "Looking back at this year, what's the moment you're proudest of?" },
   { date: "2026-12-31", name: "New Year's Eve", regions: ["global"], question: "What's one thing you want to do differently next year?" },
   { date: "2027-01-01", name: "New Year's Day", regions: ["global"], question: "What are you most excited to make or offer this year?" },
-  { date: "2027-01-13", name: "Lohri", regions: ["IN"], question: "Any Lohri plans, orders or memories to share?" },
-  { date: "2027-01-18", name: "Martin Luther King Jr. Day", regions: ["US"], question: "Is there someone in your community you'd like to recognise today?" },
-  { date: "2027-01-26", name: "Republic Day", regions: ["IN"], question: "Anything special you're doing for Republic Day?" },
-  { date: "2027-01-26", name: "Australia Day", regions: ["AU"], question: "Are you open on Australia Day? Anything planned?" },
+  { date: "2027-01-13", name: "Lohri", regions: ["IN"], question: "What does Lohri look like at your place this year?" },
+  { date: "2027-01-18", name: "Martin Luther King Jr. Day", regions: ["US"], question: "Who in your community would you like to recognise today, and why?" },
+  { date: "2027-01-26", name: "Republic Day", regions: ["IN"], question: "What are you doing for Republic Day this year?" },
+  { date: "2027-01-26", name: "Australia Day", regions: ["AU"], question: "What's the plan for Australia Day at your place?" },
 ];
 
 export function regionForTimezone(tz: string | null | undefined): Region {
