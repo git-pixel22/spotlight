@@ -66,3 +66,7 @@ video-assets/clips/
 video/node_modules/
 video/out/
 video/public/
+video-assets/launch/*.mp4
+video-launch/node_modules/
+video-launch/out/
+video-launch/public/
