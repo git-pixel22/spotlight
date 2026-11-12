@@ -7,6 +7,7 @@ import { requireApiUser } from "@/lib/session";
 import { getOwnedMoment } from "@/lib/moments";
 import { createIdea, createPost } from "@/lib/buffer/api";
 import { ruleFor } from "@/lib/channels";
+import { instagramSafeUrl } from "@/lib/media";
 
 export const maxDuration = 60;
 
@@ -48,11 +49,15 @@ export async function POST(request: NextRequest, ctx: RouteContext<"/api/moments
       const rule = ruleFor(row.service);
       const text = (textById.get(row.id) ?? row.text).slice(0, rule.limit);
       try {
+        let channelImages = images.slice(0, rule.maxImages);
+        if (row.service === "instagram") {
+          channelImages = await Promise.all(channelImages.map(async (img) => ({ ...img, url: await instagramSafeUrl(img.url, user.id) })));
+        }
         const post = await createPost(user.id, {
           channelId: row.channelId,
           service: row.service,
           text,
-          images: images.slice(0, rule.maxImages),
+          images: channelImages,
           mode,
           dueAt,
         });
