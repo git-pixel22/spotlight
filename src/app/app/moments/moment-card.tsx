@@ -35,6 +35,16 @@ function tomorrowAtNine() {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+/**
+ * Followers see the photo and the answer, never our question, so a bare "yes" or a few
+ * words won't make sense as a post. Such answers get one nudge to add a line first.
+ */
+function isThin(text: string) {
+  const words = text.match(/[\p{L}\p{N}']+/gu) ?? [];
+  if (words.length <= 4) return true;
+  return words.length <= 8 && /^(yes|yeah|yep|yup|no|nope|nah|sure|maybe|definitely|absolutely|exactly|correct|not really)\b/i.test(text.trim());
+}
+
 type Props = {
   moment: {
     id: string;
@@ -70,6 +80,8 @@ export function MomentCard({ moment, drafts: initialDrafts, channels, sampleAnsw
   const [when, setWhen] = useState(tomorrowAtNine);
   const [error, setError] = useState<string | null>(null);
   const [hidden, setHidden] = useState(false);
+  const [nudged, setNudged] = useState(false);
+  const thin = isThin(answer);
 
   useEffect(() => {
     if (focused) ref.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -184,6 +196,7 @@ export function MomentCard({ moment, drafts: initialDrafts, channels, sampleAnsw
           {(stage === "ask" || stage === "confirm" || stage === "shaping") && (
             <motion.div key="ask" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="mt-5">
               <p className="border-l-4 border-accent pl-4 text-xl font-medium leading-snug sm:text-2xl">{moment.question}</p>
+              {stage === "ask" && <p className="mt-2 pl-5 text-sm text-muted">Your followers will see your answer, not this question.</p>}
 
               {stage === "ask" && (
                 <div className="mt-5 flex flex-col items-center gap-4">
@@ -230,16 +243,39 @@ export function MomentCard({ moment, drafts: initialDrafts, channels, sampleAnsw
                     placeholder="Say it like you'd tell a regular…"
                     className="mt-2 w-full rounded-xl border border-line bg-paper p-3 outline-none focus:border-ink"
                   />
+                  {nudged && thin && stage === "confirm" && (
+                    <div className="mt-3 rounded-2xl border border-line p-4" role="status">
+                      <p className="font-medium">That&apos;s short for a post.</p>
+                      <p className="mt-1 text-sm text-muted">
+                        Your followers will see the photo and your words, not our question. Add a line about what it is or why it
+                        matters, out loud or by typing above.
+                      </p>
+                      <div className="mt-4 flex justify-center">
+                        <Recorder onTranscript={(t) => setAnswer((a) => `${a.trim()} ${t.trim()}`.trim())} />
+                      </div>
+                    </div>
+                  )}
                   <div className="mt-3 flex flex-wrap gap-2">
                     <button
                       className="btn-accent"
                       disabled={answer.trim().length < 2 || stage === "shaping"}
-                      onClick={() => shape(answer, usedSample)}
+                      onClick={() => {
+                        if (thin && !nudged && !usedSample) return setNudged(true);
+                        shape(answer, usedSample);
+                      }}
                     >
-                      {stage === "shaping" ? "Fitting your words to each channel…" : "Make my posts"}
+                      {stage === "shaping" ? "Fitting your words to each channel…" : nudged && thin ? "Make posts anyway" : "Make my posts"}
                     </button>
                     {stage === "confirm" && (
-                      <button className="btn-ghost" onClick={() => setStage("ask")}>Record again</button>
+                      <button
+                        className="btn-ghost"
+                        onClick={() => {
+                          setNudged(false);
+                          setStage("ask");
+                        }}
+                      >
+                        Record again
+                      </button>
                     )}
                   </div>
                 </div>
