@@ -21,7 +21,7 @@ Spotlight never writes for you. It finds the moments and asks the questions; you
 - OAuth app client with PKCE and state, least-privilege scopes (`account:read posts:read posts:write ideas:read ideas:write offline_access`).
 - Reads your sent posts once to learn what you do and how you write, so there's no onboarding form.
 - Reads scheduled posts and each channel's posting schedule to show where your week goes quiet.
-- `createPost` for drafts, queue (showing the slot Buffer picked) and custom times, with image assets, alt text and per-network metadata; `createIdea` with media.
+- `createPost` for drafts, queue (showing the slot Buffer picked) and custom times, with image assets, alt text and per-network metadata; `createIdea` with media. Instagram gets a 4:5 crop when a phone photo is taller than it allows.
 - Tokens are encrypted at rest, and refreshes are serialised with a database lease, so a rotated refresh token is never reused (reuse revokes the whole grant).
 - "Delete my data" removes your photos, moments and tokens in one step.
 

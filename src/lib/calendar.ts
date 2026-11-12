@@ -10,7 +10,7 @@ type CalendarEvent = {
   question: string;
 };
 
-const EVENTS: CalendarEvent[] = [
+export const EVENTS: CalendarEvent[] = [
   { date: "2026-11-26", name: "Thanksgiving", regions: ["US"], question: "Who or what are you most thankful for in your business this year?" },
   { date: "2026-11-27", name: "Black Friday", regions: ["global"], question: "What's your plan for Black Friday this year, even if it's sitting it out?" },
   { date: "2026-11-28", name: "Small Business Saturday", regions: ["US"], question: "What's one thing only a small business like yours can offer?" },

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Recorder } from "@/components/recorder";
 import { ChannelAvatar } from "@/components/channel-avatar";
+import { isThin } from "@/lib/answers";
 import { ArrowSquareOut, Check, X } from "@phosphor-icons/react";
 
 export type ChannelView = {
@@ -33,16 +34,6 @@ function tomorrowAtNine() {
   d.setHours(9, 0, 0, 0);
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-/**
- * Followers see the photo and the answer, never our question, so a bare "yes" or a few
- * words won't make sense as a post. Such answers get one nudge to add a line first.
- */
-function isThin(text: string) {
-  const words = text.match(/[\p{L}\p{N}']+/gu) ?? [];
-  if (words.length <= 4) return true;
-  return words.length <= 8 && /^(yes|yeah|yep|yup|no|nope|nah|sure|maybe|definitely|absolutely|exactly|correct|not really)\b/i.test(text.trim());
 }
 
 type Props = {

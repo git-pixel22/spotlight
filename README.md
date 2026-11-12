@@ -1,22 +1,25 @@
 # Spotlight
 
+[![CI](https://github.com/git-pixel22/spotlight/actions/workflows/ci.yml/badge.svg)](https://github.com/git-pixel22/spotlight/actions/workflows/ci.yml)
+
 **You're already living your content. Spotlight helps you notice it.**
 
 Spotlight is built on the [Buffer API](https://developers.buffer.com) for [Buffer Commit 2026](https://buffer.com/api/commit). It's for the one-person business: the potter, the barber, the florist, the home baker. Their week is full of moments worth posting, and they rarely have time to post them.
 
 1. **Drop the week's photos.** The messy ones from your camera roll are fine.
 2. **Answer one question out loud.** Spotlight picks the 3 to 5 moments worth sharing and asks what only you know ("Which flavour disappears first?"). Ten seconds each.
-3. **Your words land in Buffer.** One post per channel, fitted to each network, saved as a draft, queued, or kept as a Buffer Idea.
+3. **Your words land in Buffer.** One post per channel, fitted to each network, saved as a draft, added to your queue, scheduled for a time you pick, or kept as a Buffer Idea.
 
 Spotlight never writes for you. It notices, asks, and tidies (filler words out, character limits respected). It never invents facts, prices or claims.
 
-Live at **[spotlight.meetrajat.com](https://spotlight.meetrajat.com)**.
+Live at **[spotlight.meetrajat.com](https://spotlight.meetrajat.com)**. Demo video (1:22): [youtu.be/ifvzMvvgoEc](https://youtu.be/ifvzMvvgoEc).
 
 ## How it uses the Buffer API
 
 - **OAuth app client** with PKCE and `state`, asking for least-privilege scopes: `account:read posts:read posts:write ideas:read ideas:write offline_access`.
 - **Reads** your sent posts once to learn what you do and how you write, so there's no onboarding form. Reads scheduled posts and each channel's `postingSchedule` to show where your week goes quiet.
-- **Writes** with `createPost` (drafts or queue, with image assets and alt text, plus the per-network metadata Instagram, Facebook and Google Business need) and `createIdea` (with media).
+- **Writes** with `createPost` (drafts, queue or a custom time, with image assets and alt text, plus the per-network metadata Instagram, Facebook and Google Business need) and `createIdea` (with media).
+- **Re-reads channels** when you open your profile, so a channel connected in Buffer after signing in shows up without signing out and back in.
 
 Details that matter when acting on someone else's account:
 
@@ -24,6 +27,15 @@ Details that matter when acting on someone else's account:
 - Buffer rotates refresh tokens and revokes the whole grant if an old one is reused, so refreshes are serialised with a short database lease (`src/lib/buffer/tokens.ts`). Two parallel requests can't both refresh.
 - Buffer fetches media at publish time, so photos are stored at stable public URLs (Vercel Blob) rather than signed links that expire.
 - `429` responses are honoured: short resets are waited out, long ones are surfaced.
+- Instagram only auto-publishes images between 4:5 and 1.91:1, and most phone photos are 3:4. Instagram posts get a centre-cropped copy when needed (`src/lib/media.ts`); other networks get the original.
+
+## Guardrails
+
+- **Your words, enforced in code.** After the model fits your answer to each network, `keepOwnWords` (`src/lib/ai/own-words.ts`) drops any sentence whose words didn't come from what you said, so an invented closing line or call to action never reaches you.
+- **Questions that make good posts.** Followers see the photo and your answer, never the question, so Spotlight only asks open questions. A bare "yes" or a few words gets one nudge to add a line before posts are made.
+- **Fair use of free quotas.** Per-user daily caps (photo checks, shaping, transcription, profile builds) count only successful calls, so one person can't drain the shared free tiers and a provider outage doesn't burn anyone's allowance.
+- **Never stuck at the door.** If every free model is busy during onboarding, you get a basic profile built from simple counts over your posts, and can edit it, instead of an error.
+- **Delete my data** removes your profile, photos, moments, drafts and Buffer tokens in one step.
 
 ## The $0 stack
 
@@ -47,6 +59,26 @@ npx drizzle-kit push         # create tables
 npm run dev -- --experimental-https   # Buffer requires an HTTPS redirect URI, even on localhost
 ```
 
-Stack: Next.js 16 (App Router), TypeScript, Tailwind CSS 4, Drizzle ORM on Neon Postgres, Vercel Blob, `@google/genai`, `groq-sdk`, `motion`.
+Stack: Next.js 16 (App Router), TypeScript, Tailwind CSS 4, Drizzle ORM on Neon Postgres, Vercel Blob, `@google/genai`, `groq-sdk`, `motion`, `sharp`.
+
+## Checks
+
+```bash
+npm test            # own-words guard, short-answer check, Instagram crop, every built-in question and sample post
+npm run typecheck   # generates Next.js route types, then tsc
+npm run lint
+```
+
+Tests use Node's built-in test runner with type stripping, so there's no test framework to install. CI runs all three on every push.
+
+## Where things live
+
+| Path | What it does |
+|---|---|
+| `src/lib/buffer/` | GraphQL client, token storage and refresh lease, channel sync |
+| `src/lib/ai/` | Model fallback chains and daily caps, prompts, the own-words guard |
+| `src/app/api/` | OAuth, uploads, transcription, moments, shaping, sending, profile, account deletion |
+| `src/app/app/` | The signed-in app: home, photos, moments, profile |
+| `tests/` | Unit tests |
 
 Made by Rajat for Buffer Commit 2026. Not affiliated with Buffer.
