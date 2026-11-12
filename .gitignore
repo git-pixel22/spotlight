@@ -70,3 +70,6 @@ video-assets/launch/*.mp4
 video-launch/node_modules/
 video-launch/out/
 video-launch/public/
+
+# Private research notes, never committed
+docs/competition-notes.md
