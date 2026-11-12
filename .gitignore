@@ -60,3 +60,9 @@ docs/concepts-archive/img/
 docs/concepts-archive/shots/
 
 !.env.example
+
+# Demo video: raw captures and build output (large)
+video-assets/clips/
+video/node_modules/
+video/out/
+video/public/
