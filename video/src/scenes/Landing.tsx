@@ -22,11 +22,11 @@ export const Landing: React.FC = () => {
   const end = T_PRODUCT + 0.6;
   const visible = t >= T_LANDING - 0.1 && t <= end;
   if (!visible) return null;
-  const click = voTime("vo4.wav", 0.75);
+  const click = voTime("vo4.wav", 0.85);
   const inn = tw(t, T_LANDING + 0.05, T_LANDING + 0.75);
   const out = tw(t, T_PRODUCT - 0.1, end, 0, 1, inOut);
-  const dim = tw(t, T_LANDING + 0.9, T_LANDING + 1.6, 0, 0.66, inOut) * (1 - out);
-  const cur = tw(t, T_LANDING + 0.8, click - 0.15, 0, 1, inOut);
+  const dim = tw(t, T_LANDING + 0.6, T_LANDING + 1.2, 0, 0.66, inOut) * (1 - out);
+  const cur = tw(t, T_LANDING + 0.5, click - 0.12, 0, 1, inOut);
   const ripple = tw(t, click, click + 0.6);
   const press = tw(t, click - 0.08, click + 0.04) * (1 - tw(t, click + 0.04, click + 0.3));
   return (
@@ -93,14 +93,14 @@ export const Landing: React.FC = () => {
             position: "absolute",
             left: interpolate(cur, [0, 1], [bx + 420, bx + 24]),
             top: interpolate(cur, [0, 1], [by + 260, by + 4]),
-            opacity: Math.min(tw(t, T_LANDING + 0.8, T_LANDING + 1.1), 1 - out),
+            opacity: Math.min(tw(t, T_LANDING + 0.5, T_LANDING + 0.8), 1 - out),
             scale: String(1 - press * 0.14),
             filter: "drop-shadow(0 3px 6px rgba(0,0,0,0.35))",
           }}
         >
           <path d="M5 3l14 7.5-6.2 1.6L10.5 19z" fill={C.white} stroke={C.ink} strokeWidth={1.6} strokeLinejoin="round" />
         </svg>
-        <Caption from={T_LANDING + 0.3} to={T_PRODUCT + 0.2} variant="pill" style={{ bottom: 40 }} />
+        <Caption from={T_LANDING} to={T_PRODUCT + 0.2} variant="pill" style={{ bottom: 40 }} />
       </AbsoluteFill>
   );
 };

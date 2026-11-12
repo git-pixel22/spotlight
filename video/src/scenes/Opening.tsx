@@ -22,27 +22,27 @@ const rect = (i: number) => ({
 const center = (i: number) => ({ x: rect(i).x + TILE / 2, y: rect(i).y + TILE / 2 });
 
 const PICKS = [
-  { i: 7, label: "The potter", lit: 3.75, said: voTime("vo2.wav", 0.25) },
-  { i: 15, label: "The barber", lit: 4.75, said: voTime("vo2.wav", 1.2) },
-  { i: 10, label: "The home baker", lit: 5.75, said: voTime("vo2.wav", 2.1) },
+  { i: 7, label: "The potter", lit: 2.65, said: voTime("vo2.wav", 0.25) },
+  { i: 15, label: "The barber", lit: 3.35, said: voTime("vo2.wav", 1.2) },
+  { i: 10, label: "The home baker", lit: 4.05, said: voTime("vo2.wav", 2.1) },
 ];
 const CARD = { w: 430, h: 580, gap: 56, top: 132 };
 const cardX = (k: number) => (1920 - (3 * CARD.w + 2 * CARD.gap)) / 2 + k * (CARD.w + CARD.gap);
 
-const DIM_AT = 2.5;
-const MORPH = 6.45;
+const DIM_AT = 1.5;
+const MORPH = voTime("vo2.wav", 0.22) - 0.7; // cards are forming as "The potter" is said
 const NO_TIME = voTime("vo2.wav", 4.9);
 
 export const Opening: React.FC = () => {
   const t = useT();
   if (t > T_LOGO + 1.2) return null;
 
-  const dim = tw(t, DIM_AT, DIM_AT + 0.9, 0, 0.8, inOut);
+  const dim = tw(t, DIM_AT, DIM_AT + 0.7, 0, 0.8, inOut);
   const p = [center(PICKS[0].i), center(PICKS[1].i), center(PICKS[2].i)];
-  const keys = [2.7, 3.7, 4.7, 5.7];
+  const keys = [1.9, 2.6, 3.3, 4.0];
   const sx = interpolate(t, keys, [-260, p[0].x, p[1].x, p[2].x], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: inOut });
   const sy = interpolate(t, keys, [620, p[0].y, p[1].y, p[2].y], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: inOut });
-  const morph = tw(t, MORPH, MORPH + 1.0, 0, 1, inOut);
+  const morph = tw(t, MORPH, MORPH + 0.9, 0, 1, inOut);
   const rollScale = interpolate(t, [0, MORPH + 1], [1.05, 1.0]);
   const dark = tw(t, NO_TIME, NO_TIME + 0.9, 0, 1, inOut);
 
@@ -71,7 +71,7 @@ export const Opening: React.FC = () => {
 
       {/* the three picked photos: lit in the roll, then they become the owner cards */}
       {PICKS.map((pk, k) => {
-        const lit = tw(t, pk.lit, pk.lit + 0.45);
+        const lit = tw(t, pk.lit, pk.lit + 0.4);
         if (lit <= 0) return null;
         const r = rect(pk.i);
         const x = interpolate(morph, [0, 1], [r.x, cardX(k)]);

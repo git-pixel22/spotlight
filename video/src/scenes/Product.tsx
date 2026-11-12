@@ -25,7 +25,7 @@ const Titles: React.FC = () => {
   return (
     <>
       {SCENES.map((s, i) => {
-        const o = vis(t, s.from + (i === 0 ? 0.5 : 0.05), s.to + 0.05, 0.5, 0.25);
+        const o = vis(t, s.from + (i === 0 ? 0.35 : 0.05), s.to + 0.05, 0.45, 0.22);
         if (o <= 0) return null;
         return (
           <div key={i} style={{ position: "absolute", left: LEFT, top: 168, width: COLW, ...rise(o) }}>
@@ -316,7 +316,7 @@ const Words: React.FC = () => {
 /* ---------- scene 8: three ways to send ---------- */
 const Send: React.FC = () => {
   const t = useT();
-  const o = vis(t, S8 + 0.2, END, 0.5, 0.3);
+  const o = vis(t, S8 + 0.05, END, 0.4, 0.3);
   if (o <= 0) return null;
   const opts = [
     { l: "Save as drafts", at: voTime("vo8.wav", 0.25) },
@@ -383,7 +383,7 @@ const PhoneSpots: React.FC = () => {
   const k = PHONE_SCALE;
   const qFrom = voTime("vo6.wav", 1.37) - 0.2;
   const q = vis(t, qFrom, E.scrollToMic - 0.15, 0.6, 0.4) * 0.62;
-  const b = vis(t, S8 + 0.25, E.sendTap + 0.1, 0.6, 0.35) * 0.6;
+  const b = vis(t, S8 + 0.15, E.sendTap + 0.1, 0.5, 0.3) * 0.6;
   return (
     <>
       <Spot x={195 * k} y={268 * k} rx={300 * k} ry={120 * k} dim={q} warm={0.1} soft={0.52} />
@@ -438,7 +438,7 @@ export const Product: React.FC = () => {
       <Voice />
       <Words />
       <Send />
-      <Caption from={T_PRODUCT + 0.3} to={END} variant="side" />
+      <Caption from={T_PRODUCT + 0.3} to={T_BUFFER + 0.3} variant="side" />
       <Stepper />
     </AbsoluteFill>
   );

@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill, Sequence, staticFile, useVideoConfig } from "remotion";
 import { Audio } from "@remotion/media";
 import { C } from "./theme";
-import { VO } from "./timeline";
+import { MUSIC, MUSIC_OFFSET, VO, musicGain } from "./timeline";
 import { BufferClip } from "./scenes/BufferClip";
 import { EndCard } from "./scenes/EndCard";
 import { Landing } from "./scenes/Landing";
@@ -30,7 +30,22 @@ const Narration: React.FC = () => {
   );
 };
 
-export const Main: React.FC = () => (
+/** Music bed: ducked under every spoken line, lifted in the gaps, ends on the track's own last chord. */
+const Music: React.FC = () => {
+  const { fps } = useVideoConfig();
+  return (
+    <Audio
+      name="Music bed"
+      src={staticFile(MUSIC.file)}
+      trimBefore={Math.round(MUSIC_OFFSET * fps)}
+      volume={(f) => musicGain(f / fps)}
+    />
+  );
+};
+
+export type Stem = "mix" | "narration" | "music";
+
+export const Main: React.FC<{ stem?: Stem }> = ({ stem = "mix" }) => (
   <AbsoluteFill style={{ background: C.mist }}>
     <Opening />
     <Landing />
@@ -39,6 +54,7 @@ export const Main: React.FC = () => (
     <Stack />
     <LogoScene />
     <EndCard />
-    <Narration />
+    {stem !== "music" ? <Narration /> : null}
+    {stem !== "narration" ? <Music /> : null}
   </AbsoluteFill>
 );

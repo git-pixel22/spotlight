@@ -3,17 +3,17 @@ import { AbsoluteFill, interpolate } from "remotion";
 import { C, fontFamily, headline, tw } from "../theme";
 import { T_END, voTime } from "../timeline";
 import { Mark, useT } from "../ui/base";
-import { irisScale } from "./LogoScene";
+import { IRIS_COVERED, irisScale } from "./LogoScene";
 
 export const EndCard: React.FC = () => {
   const t = useT();
   if (t < T_END) return null;
-  const covered = t >= T_END + 0.72;
-  const detail = tw(t, T_END + 1.3, T_END + 1.75);
+  const covered = t >= T_END + IRIS_COVERED;
+  const detail = tw(t, T_END + 0.95, T_END + 1.35);
   const lineAt = voTime("vo9.wav", 5.05);
   const line = tw(t, lineAt, lineAt + 0.7);
-  const url = tw(t, lineAt + 1.5, lineAt + 2.1);
-  const built = tw(t, lineAt + 1.8, lineAt + 2.4);
+  const url = tw(t, lineAt + 0.9, lineAt + 1.45);
+  const built = tw(t, lineAt + 1.15, lineAt + 1.7);
   const up = (o: number) => ({ opacity: o, translate: `0px ${interpolate(o, [0, 1], [18, 0])}px` });
   return (
     <AbsoluteFill>

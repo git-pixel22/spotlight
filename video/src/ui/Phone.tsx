@@ -30,7 +30,7 @@ export const Phone: React.FC<{ children?: React.ReactNode }> = ({ children }) =>
     >
       <div style={{ position: "relative", width: SW, height: SH, borderRadius: 50, overflow: "hidden", background: C.mist }}>
         {SEGMENTS.map((s, i) => (
-          <Sequence key={i} from={s.from} durationInFrames={s.frames} layout="none" name={`${s.clip} ${s.a}-${s.b} @${s.rate}x`}>
+          <Sequence key={i} from={s.from} durationInFrames={s.frames} layout="none" name={`${s.clip} ${s.a}-${s.b} @${s.rate.toFixed(2)}x`}>
             <Video
               src={staticFile(`clips/${s.clip}.mp4`)}
               muted
@@ -50,7 +50,7 @@ export const Phone: React.FC<{ children?: React.ReactNode }> = ({ children }) =>
 /** "Sped up" marker shown while a slow AI wait is fast-forwarded. */
 export const SpeedChip: React.FC = () => {
   const t = useT();
-  const s = SEGMENTS.find((x) => t >= x.start && t < x.end && x.rate >= 2);
+  const s = SEGMENTS.find((x) => t >= x.start && t < x.end && x.rate >= 2.5);
   if (!s) return null;
   const o = Math.min(tw(t, s.start, s.start + 0.2), 1 - tw(t, s.end - 0.2, s.end));
   return (
@@ -73,7 +73,7 @@ export const SpeedChip: React.FC = () => {
       <svg width={26} height={18} viewBox="0 0 26 18">
         <path d="M1 1l11 8-11 8zM14 1l11 8-11 8z" fill={C.sun} />
       </svg>
-      Sped up {s.rate}x
+      Fast forward
     </div>
   );
 };

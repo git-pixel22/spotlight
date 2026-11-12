@@ -17,11 +17,11 @@ export const Stack: React.FC = () => {
   const end = T_END + 0.8;
   if (t < T_STACK || t > end) return null;
   const s = T_STACK;
-  const head = tw(t, s + 0.25, s + 0.85);
+  const head = tw(t, s + 0.15, s + 0.65);
   const chainAt = voTime("vo9.wav", 1.9);
   const chain = tw(t, chainAt - 0.2, chainAt + 0.4);
   return (
-    <AbsoluteFill style={{ background: C.mist, opacity: tw(t, s, s + 0.5) }}>
+    <AbsoluteFill style={{ background: C.mist, opacity: tw(t, s, s + 0.4) }}>
       <div style={{ position: "absolute", left: 130, top: 70 }}>
         <Wordmark size={36} />
       </div>
@@ -30,7 +30,7 @@ export const Stack: React.FC = () => {
       </div>
       <div style={{ position: "absolute", left: 130, top: 348, display: "flex", gap: 24 }}>
         {TIERS.map((x, i) => {
-          const a = tw(t, s + 0.6 + i * 0.14, s + 1.2 + i * 0.14);
+          const a = tw(t, s + 0.3 + i * 0.1, s + 0.8 + i * 0.1);
           return (
             <div
               key={x.name}
@@ -74,7 +74,7 @@ export const Stack: React.FC = () => {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
           {CHAIN.map((c, i) => {
-            const litAt = chainAt + 0.25 + i * 0.42;
+            const litAt = chainAt + 0.3 + i * 0.5;
             const lit = tw(t, litAt, litAt + 0.3, 0, 1, inOut);
             return (
               <React.Fragment key={c}>
@@ -104,7 +104,7 @@ export const Stack: React.FC = () => {
           })}
         </div>
       </div>
-      <Caption from={T_STACK} to={T_END + 0.2} variant="plain" style={{ bottom: 64 }} />
+      <Caption from={T_STACK + 0.2} to={T_END + 0.2} variant="plain" style={{ bottom: 64 }} />
     </AbsoluteFill>
   );
 };
