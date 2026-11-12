@@ -75,6 +75,13 @@ export function MomentCard({ moment, drafts: initialDrafts, channels, sampleAnsw
     if (focused) ref.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [focused]);
 
+  // The tall review collapses into a short confirmation, which can leave it above the
+  // viewport. The confirmation only mounts after the review animates out, so scroll from
+  // its own ref callback, once it exists.
+  const showSent = (el: HTMLDivElement | null) => {
+    if (el) requestAnimationFrame(() => el.scrollIntoView({ behavior: "smooth", block: "center" }));
+  };
+
   const channelById = new Map(channels.map((c) => [c.id, c]));
 
   async function shape(text: string, useSample = false) {
@@ -118,7 +125,8 @@ export function MomentCard({ moment, drafts: initialDrafts, channels, sampleAnsw
       setResults(json.results);
       setStage(json.results.some((r: SendResult) => r.ok) ? "sent" : "review");
       if (!json.results.some((r: SendResult) => r.ok)) setError("Buffer didn't accept these posts. See the errors below.");
-      router.refresh();
+      // No router.refresh() here: the server list would drop this card mid-confirmation
+      // and pull the next moments up under the reader. The card updates itself instead.
     } catch (e) {
       setError((e as Error).message || "Something went wrong");
       setStage("review");
@@ -128,7 +136,14 @@ export function MomentCard({ moment, drafts: initialDrafts, channels, sampleAnsw
   async function dismiss() {
     setHidden(true);
     await fetch(`/api/moments/${moment.id}/send`, { method: "DELETE" });
-    router.refresh();
+  }
+
+  /** Scroll to the next card that still needs an answer, or go home when there is none. */
+  function nextMoment() {
+    const cards = [...document.querySelectorAll<HTMLElement>("[data-moment-card]")];
+    const next = cards.slice(cards.indexOf(ref.current!) + 1).find((el) => el.dataset.done !== "true");
+    if (next) next.scrollIntoView({ behavior: "smooth", block: "start" });
+    else router.push("/app");
   }
 
   if (hidden) return null;
@@ -136,10 +151,12 @@ export function MomentCard({ moment, drafts: initialDrafts, channels, sampleAnsw
   return (
     <motion.div
       ref={ref}
+      data-moment-card
+      data-done={stage === "sent" ? "true" : "false"}
       layout
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`panel overflow-hidden ${focused ? "ring-2 ring-ink/15" : ""}`}
+      className={`panel scroll-mt-20 overflow-hidden ${focused ? "ring-2 ring-ink/15" : ""}`}
     >
       {photos.length > 0 && (
         <div className={`grid gap-0.5 ${photos.length > 1 ? "grid-cols-2" : ""}`}>
@@ -299,9 +316,15 @@ export function MomentCard({ moment, drafts: initialDrafts, channels, sampleAnsw
           )}
 
           {stage === "sent" && (
-            <motion.div key="sent" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="mt-5 rounded-2xl bg-stage p-5 text-paper">
+            <motion.div
+              key="sent"
+              ref={showSent}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="mt-5 scroll-mt-24 rounded-2xl bg-stage p-5 text-paper"
+            >
               <p className="font-heading text-2xl">
-                {sentMode === "draft" ? "Saved as drafts in Buffer." : sentMode === "idea" ? "Saved as an Idea in Buffer." : "Scheduled in Buffer."}
+                {sentMode === "draft" ? "Saved as drafts in Buffer." : sentMode === "idea" ? "Saved as an Idea in Buffer." : sentMode === "queue" ? "Added to your Buffer queue." : "Scheduled in Buffer."}
               </p>
               <ul className="mt-2 space-y-1 text-sm">
                 {results.map((r, i) => {
@@ -315,7 +338,12 @@ export function MomentCard({ moment, drafts: initialDrafts, channels, sampleAnsw
                   );
                 })}
               </ul>
-              <a href="https://publish.buffer.com" target="_blank" rel="noreferrer" className="btn mt-4 border border-white/20 text-paper hover:bg-white/10">Open Buffer <ArrowSquareOut /></a>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button onClick={nextMoment} className="btn-accent">Next moment</button>
+                <a href="https://publish.buffer.com" target="_blank" rel="noreferrer" className="btn border border-white/20 text-white hover:bg-white/10">
+                  Open Buffer <ArrowSquareOut />
+                </a>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

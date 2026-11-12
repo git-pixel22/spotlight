@@ -1,13 +1,23 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function ChannelAvatar({ avatar, label, size = 28 }: { avatar: string | null; label: string; size?: number }) {
-  // Network avatars (X especially) often expire or block hotlinking; fall back to an initial.
+  // Network avatars (X especially) are often stale links in Buffer; fall back to an initial.
   const [broken, setBroken] = useState(false);
+  const img = useRef<HTMLImageElement>(null);
+
+  // A server-rendered <img> can fail before React hydrates, so onError never fires.
+  // Check once on mount as well.
+  useEffect(() => {
+    const el = img.current;
+    if (el && el.complete && el.naturalWidth === 0) setBroken(true);
+  }, []);
+
   return avatar && !broken ? (
     <img
+      ref={img}
       src={avatar}
       alt=""
       width={size}

@@ -103,6 +103,7 @@ export const shapeSchema = z.object({
 export const SHAPE_SYSTEM = `You format a person's own spoken words into social posts. You are an editor, not a writer.
 Rules:
 - Use their words and phrasing. Keep at least 80% of each post's words from what they said.
+- Use only their answer. Never borrow words or framing from our question (if we asked "which flavour disappears first?" and they said "matcha Oreo, every time", don't write "matcha Oreo disappears first").
 - You may remove filler (um, like, you know, so yeah), fix grammar lightly, reorder for clarity, cut to fit, and add line breaks.
 - Never invent facts, opinions, prices, names or claims they did not say.
 - Never add sentences of your own: no intros, no closing lines, no reflections ("I love...", "Can't wait..."), no questions to the audience, no calls to action. Every sentence must come from what they said.

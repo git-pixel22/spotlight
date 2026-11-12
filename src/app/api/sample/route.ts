@@ -16,7 +16,9 @@ export async function POST() {
     const moments = await db
       .insert(schema.moments)
       .values(
-        SAMPLE_MOMENTS.map((m) => ({
+        // Newest first on the moments page, so stagger timestamps to keep the story's order.
+        SAMPLE_MOMENTS.map((m, i) => ({
+          createdAt: new Date(Date.now() - i * 1000),
           userId: user.id,
           source: "sample" as const,
           photos: m.photos,

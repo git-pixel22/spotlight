@@ -51,7 +51,9 @@ export async function POST(request: NextRequest) {
     });
 
     const rows = data.moments
-      .map((m) => ({
+      .map((m, i) => ({
+        // Keep the AI's order on the newest-first moments page.
+        createdAt: new Date(Date.now() - i * 1000),
         userId: user.id,
         source: "photo_dump" as const,
         photos: [...new Set(m.photoIndexes)].filter((i) => i < photos.length).map((i) => ({ url: photos[i].url })),
