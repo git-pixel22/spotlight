@@ -6,7 +6,9 @@ import { ruleFor } from "@/lib/channels";
 // posts are precomputed so the whole flow (including real Buffer calls) works
 // even when every free AI quota is used up.
 
-export const SAMPLE_PHOTO_BASE = "https://i1ikllg7y8rxw8mn.public.blob.vercel-storage.com/sample";
+// Photos from Unsplash (Unsplash License), stored at stable public URLs because Buffer
+// fetches media when it publishes. Credits in the README.
+export const SAMPLE_PHOTO_BASE = "https://i1ikllg7y8rxw8mn.public.blob.vercel-storage.com/sample-v2";
 const photo = (name: string) => `${SAMPLE_PHOTO_BASE}/${name}.jpg`;
 
 type SampleMoment = {
@@ -21,9 +23,9 @@ type SampleMoment = {
 export const SAMPLE_MOMENTS: SampleMoment[] = [
   {
     title: "The berry croissant debut",
-    observation: "Two croissants split and filled with vanilla cream, piled with raspberries and blueberries.",
+    observation: "Two seeded croissants split open and filled with cream, raspberries and blueberries.",
     question: "What gave you the idea for these berry croissants?",
-    photos: [{ url: photo("croissants"), alt: "Two croissants filled with vanilla cream and topped with raspberries and blueberries in a box" }],
+    photos: [{ url: photo("croissants"), alt: "Two seeded croissants split open and filled with whipped cream, raspberries and blueberries on a white plate" }],
     sampleAnswer:
       "These berry croissants started as leftovers. I had blueberries and raspberries from a cake order and a tray of croissants from the morning, so I split them, piped in vanilla cream and just piled the berries on top. First batch ever, and all eight sold before lunch. Three people asked if they'd be back on Saturday. So I guess they're back on Saturday.",
     posts: {
@@ -39,48 +41,48 @@ export const SAMPLE_MOMENTS: SampleMoment[] = [
   },
   {
     title: "The cookie box favourite",
-    observation: "A box of stuffed cookies: matcha with an Oreo, red velvet, a bright blue one and a caramel crunch.",
+    observation: "A box of loaded cookies, one topped with an Oreo, and a bright green matcha cookie with white chocolate chunks.",
     question: "Which flavour in this box disappears first?",
     photos: [
-      { url: photo("cookie-box"), alt: "A box of six stuffed cookies including matcha, red velvet and a bright blue cookie" },
-      { url: photo("cookies-assorted"), alt: "A box of assorted cookies on parchment paper" },
+      { url: photo("cookie-box"), alt: "An open gift box of six loaded cookies with almonds, chocolate drizzle, a caramel biscuit and an Oreo on top" },
+      { url: photo("cookie-matcha"), alt: "A green matcha cookie with white chocolate chunks on a wooden board" },
     ],
     sampleAnswer:
-      "Matcha Oreo, every single time. I almost didn't make it because I thought matcha was too niche, and now people message me just to ask if it's in the box this week. The blue one is cookie monster. That's for the kids. And honestly for me.",
+      "The matcha one, every single time. I almost didn't make it because I thought matcha was too niche, and now people message me just to ask if it's in the box this week. The Oreo one is for the kids. And honestly for me.",
     posts: {
-      twitter: "Matcha Oreo, every single time. I almost didn't make it because I thought matcha was too niche. Now people message me just to ask if it's in the box this week.",
+      twitter: "The matcha one, every single time. I almost didn't make it because I thought matcha was too niche. Now people message me just to ask if it's in the box this week.",
       linkedin:
-        "Matcha Oreo. Every single time.\n\nI almost didn't make it because I thought matcha was too niche. Now people message me just to ask if it's in the box this week.\n\nThe blue one is cookie monster. That's for the kids. And honestly, for me.",
+        "The matcha one. Every single time.\n\nI almost didn't make it because I thought matcha was too niche. Now people message me just to ask if it's in the box this week.\n\nThe Oreo one is for the kids. And honestly, for me.",
       instagram:
-        "Matcha Oreo, every single time 💚 I almost didn't make it because I thought matcha was too niche, and now people message me just to ask if it's in the box this week.\n\nThe blue one is cookie monster. That's for the kids. And honestly for me 💙\n\n#cookiebox #matcha",
+        "The matcha one, every single time 💚 I almost didn't make it because I thought matcha was too niche, and now people message me just to ask if it's in the box this week.\n\nThe Oreo one is for the kids. And honestly for me 🍪\n\n#cookiebox #matcha",
       default:
-        "Matcha Oreo, every single time. I almost didn't make it because I thought matcha was too niche, and now people message me just to ask if it's in the box this week. The blue one is cookie monster. That's for the kids. And honestly for me.",
+        "The matcha one, every single time. I almost didn't make it because I thought matcha was too niche, and now people message me just to ask if it's in the box this week. The Oreo one is for the kids. And honestly for me.",
     },
   },
   {
     title: "The first festive batch",
-    observation: "Chocolate chip muffins in brown tulip cases, with a tiny Christmas tree in the background.",
-    question: "What's the story behind the little tree in the back?",
-    photos: [{ url: photo("muffins"), alt: "Chocolate chip muffins in brown paper cases with a small Christmas tree behind them" }],
+    observation: "Chocolate cupcakes in shiny green cases with sprinkles and a glittery Christmas tree on top.",
+    question: "What's the story behind the little trees on top?",
+    photos: [{ url: photo("cupcakes-festive"), alt: "A chocolate cupcake in a green foil case topped with sprinkles and a glitter Christmas tree pick" }],
     sampleAnswer:
-      "The mini tree went up on Monday and the chocolate chip muffins got the brown tulip cases. It's still November, I know, but the kitchen feels like December already. And honestly so do I.",
+      "The glitter trees came out on Monday and went straight onto the chocolate cupcakes, green cases and all. It's still November, I know, but the kitchen feels like December already. And honestly so do I.",
     posts: {
-      twitter: "The mini tree went up on Monday and the chocolate chip muffins got the brown tulip cases. It's still November, I know. The kitchen feels like December already. So do I.",
+      twitter: "The glitter trees came out on Monday and went straight onto the chocolate cupcakes, green cases and all. It's still November, I know. The kitchen feels like December already. So do I.",
       linkedin:
-        "The mini tree went up on Monday, and the chocolate chip muffins got the brown tulip cases.\n\nIt's still November, I know. But the kitchen feels like December already.\n\nAnd honestly, so do I.",
+        "The glitter trees came out on Monday and went straight onto the chocolate cupcakes, green cases and all.\n\nIt's still November, I know. But the kitchen feels like December already.\n\nAnd honestly, so do I.",
       instagram:
-        "The mini tree went up on Monday 🎄 and the chocolate chip muffins got their brown tulip cases. It's still November, I know, but the kitchen feels like December already. And honestly so do I.\n\n#festivebaking #muffins",
+        "The glitter trees came out on Monday 🎄 and went straight onto the chocolate cupcakes, green cases and all. It's still November, I know, but the kitchen feels like December already. And honestly so do I.\n\n#festivebaking #cupcakes",
       default:
-        "The mini tree went up on Monday and the chocolate chip muffins got the brown tulip cases. It's still November, I know, but the kitchen feels like December already. And honestly so do I.",
+        "The glitter trees came out on Monday and went straight onto the chocolate cupcakes, green cases and all. It's still November, I know, but the kitchen feels like December already. And honestly so do I.",
     },
   },
   {
     title: "Ten minutes before opening",
-    observation: "A full display case: rows of pastries, labels in place, every shelf stocked.",
+    observation: "A full counter of labelled croissants and pastries, and trays of pain au chocolat and custard tarts.",
     question: "What does the counter look like ten minutes before you open?",
     photos: [
-      { url: photo("display-case"), alt: "A glass display case full of pastries on labelled trays" },
-      { url: photo("display-trays"), alt: "Trays of doughnuts and cinnamon rolls on a bakery rack" },
+      { url: photo("display-case"), alt: "A bakery counter with rows of labelled croissants and pastries under warm lights" },
+      { url: photo("display-trays"), alt: "Trays of pain au chocolat and custard tarts lined up on a counter" },
     ],
     sampleAnswer:
       "Ten minutes before we open, it's full. Every tray filled, labels straight, coffee on. Ten minutes later it's chaos and by noon the top shelf is empty. Those ten minutes are my favourite part of the week.",

@@ -31,7 +31,7 @@ export default async function AppHome() {
     limit: 20,
   });
   const recentPhotos = waiting.flatMap((m) => m.photos.map((p) => p.url)).slice(0, 3);
-  const stack = recentPhotos.length === 3 ? recentPhotos : [photo("cookie-box"), photo("muffins"), photo("croissants")];
+  const stack = recentPhotos.length === 3 ? recentPhotos : [photo("cookie-box"), photo("cupcakes-festive"), photo("croissants")];
   const calendar = upcomingCalendarMoments(user.channels[0]?.timezone ?? user.timezone);
   const name = firstName(user);
 

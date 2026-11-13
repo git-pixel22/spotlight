@@ -10,7 +10,7 @@ import { getCurrentUser } from "@/lib/session";
 import "./landing.css";
 
 /* A range of small businesses, not one trade. */
-const RANGE = ["pottery-wheel", "barber", "florist", "threads", "yoga-class", "plants", "bakery-cookie-box"];
+const RANGE = ["pottery-wheel", "barber", "florist", "threads", "yoga-class", "plants", "bakery-box"];
 
 export default async function Home({ searchParams }: PageProps<"/">) {
   const [user, params] = await Promise.all([getCurrentUser(), searchParams]);

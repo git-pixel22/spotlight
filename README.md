@@ -81,4 +81,32 @@ Tests use Node's built-in test runner with type stripping, so there's no test fr
 | `src/app/app/` | The signed-in app: home, photos, moments, profile |
 | `tests/` | Unit tests |
 
+## Photo credits
+
+Every photo in the app is from [Unsplash](https://unsplash.com), used under the [Unsplash License](https://unsplash.com/license). Landing page photos live in `public/landing/`; the sample week's photos are on Vercel Blob (Buffer needs stable public URLs to publish them).
+
+| File | Unsplash photo |
+|---|---|
+| Sample: `croissants` | [photo-1639390150902](https://images.unsplash.com/photo-1639390150902-8f1b3916e14b) |
+| Sample: `cookie-box`, landing: `bakery-box` | [photo-1772651392135](https://images.unsplash.com/photo-1772651392135-b891a5e4f8a3) |
+| Sample: `cookie-matcha` | [photo-1757345016219](https://images.unsplash.com/photo-1757345016219-7b3b8a1b9fba) |
+| Sample: `cupcakes-festive` | [photo-1639098620661](https://images.unsplash.com/photo-1639098620661-3d47712d8a2a) |
+| Sample: `display-case` | [photo-1705972018470](https://images.unsplash.com/photo-1705972018470-a89eda1c6ce4) |
+| Sample: `display-trays` | [photo-1483695028939](https://images.unsplash.com/photo-1483695028939-5bb13f8648b0) |
+| `barber` | [photo-1647140655214](https://images.unsplash.com/photo-1647140655214-e4a2d914971f) |
+| `bike-workshop` | [photo-1760310936486](https://images.unsplash.com/photo-1760310936486-4dd450aab2a8) |
+| `candles` | [photo-1764822553647](https://images.unsplash.com/photo-1764822553647-b3a680513eaf) |
+| `florist` | [photo-1586973698216](https://images.unsplash.com/photo-1586973698216-0c4c285d7afd) |
+| `flowers-vase` | [photo-1587317996237](https://images.unsplash.com/photo-1587317996237-eddd7e834d84) |
+| `market` | [photo-1649533663539](https://images.unsplash.com/photo-1649533663539-03ac9165d80b) |
+| `owner-cafe` | [photo-1753351052363](https://images.unsplash.com/photo-1753351052363-53ce102830eb) |
+| `owner-potter` | [photo-1753164726596](https://images.unsplash.com/photo-1753164726596-0018b81ab993) |
+| `plants` | [photo-1758524052155](https://images.unsplash.com/photo-1758524052155-f3a6fea3084e) |
+| `pottery-hands` | [photo-1589051088132](https://images.unsplash.com/photo-1589051088132-06f36a22012a) |
+| `pottery-wheel` | [photo-1595351298020](https://images.unsplash.com/photo-1595351298020-038700609878) |
+| `sewing` | [photo-1517840545241](https://images.unsplash.com/photo-1517840545241-b491010a8af4) |
+| `tattoo` | [photo-1775135981378](https://images.unsplash.com/photo-1775135981378-4e7c1767436d) |
+| `threads` | [photo-1578353022142](https://images.unsplash.com/photo-1578353022142-09264fd64295) |
+| `yoga-class` | [photo-1787647090390](https://images.unsplash.com/photo-1787647090390-890c94512cee) |
+
 Made by Rajat for Buffer Commit 2026. Not affiliated with Buffer.
